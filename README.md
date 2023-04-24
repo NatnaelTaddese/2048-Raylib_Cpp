@@ -9,57 +9,9 @@ https://github.com/raysan5/raylib
 Download the zip file, or clone the repository. It doesn't matter what one you use.
 Put the raylib sources in a folder called raylib inside your game folder (The same folder this file is in). The folder must be named raylib, it can not be raylib-master. The raylib folder should contain all the sources from raylib (including the 'src' folder)
 
-# Example app
-
-This repository is pre-populated wit the raylib game template. It is a great starting point for your game.
-https://github.com/raysan5/raylib-game-template
-
-If you want to have a different starting point, simply replace the files in the game folder with your own files.
-
 ## Using C++
 
 By default this process is setup to build a project using C. If you want to use C++, you can replace your files with you own cpp files. There is is a simple C++ file in the \_app dir. The raylib template is designed for C, not C++, but the version in this repository has been modified to work as C++ if you choose to rename the files.
-
-# Generate Projects
-
-For windows users, there are two batch files you can use depending on what compiler you are using. For linux users you can simply use a terminal.
-Only do ONE of these options depending on your compiler and platform.
-
-## Windows Users
-
-Visual Studio users should run
-
-    premake-VisualStudio.bat
-
-This will generate a Visual Studio project.
-
-## MinGW-w64 Users
-
-Please make sure you have a recent version of MinGW-W64. The older versons from mingw.org will not work.
-We recomend the W64Devkit. I thas everything needed to build raylib. I can be downloaded from here https://github.com/skeeto/w64devkit/releases
-
-Once you have MinGW-W64
-Run the batch file.
-
-    premake-mingw.bat
-
-This will generate a makefile for you
-
-## Linux users
-
-cd to the game folder and run
-
-    ./premake5 gmake2
-
-This will generate a makefile for you.
-
-## macOS users
-
-cd to the game folder and run
-
-    ./premake5.osx gmake2
-
-This will generate a makefile for you.
 
 # Build your game
 
