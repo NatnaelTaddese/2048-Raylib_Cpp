@@ -6,6 +6,8 @@
  ********************************************************************************************/
 
 #include "raylib.h"
+#include <vector>
+
 #include <string>
 #include <iostream>
 
@@ -15,6 +17,14 @@ struct tile
     Color color;
 
 } squareTile;
+
+struct grid
+{
+    std::vector<std::vector<Vector2>> grid = {{{}, {}, {}, {}},
+                                              {{}, {}, {}, {}},
+                                              {{}, {}, {}, {}},
+                                              {{}, {}, {}, {}}};
+};
 
 // --------------------
 // GLOBAL VARIABLES
@@ -31,6 +41,7 @@ void slideTilesLeft();
 void slideTilesRight();
 void slideTilesUp();
 void slideTilesDown();
+bool isGridOccupied(std::vector<int>);
 
 void drawBoard(int screenOffset, int squareSize)
 {
