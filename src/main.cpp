@@ -9,7 +9,7 @@
 #include <string>
 #include <iostream>
 
-typedef struct tile
+struct tile
 {
     Vector2 position;
     Color color;
@@ -24,6 +24,8 @@ const int screenOffset = 50;
 const int squareSize = 120;
 const int lineWidth = 10;
 const int tileSize = squareSize - 10;
+
+static bool gameOver = false;
 
 void slideTilesLeft();
 void slideTilesRight();
@@ -51,9 +53,14 @@ void drawBoard(int screenOffset, int squareSize)
 
 void initGame()
 {
+    // initializing defalut values before running game
     InitWindow(screenWidth, screenHeight, "2048");
 
     SetTargetFPS(60);
+
+    // set default values for tile
+    squareTile.position.x = screenOffset + 10;
+    squareTile.position.y = ((screenOffset / 2) + 150) + lineWidth;
 }
 
 int main(void)
@@ -62,6 +69,23 @@ int main(void)
 
     while (!WindowShouldClose())
     {
+        if (IsKeyPressed(KEY_LEFT))
+        {
+            squareTile.position.x -= squareSize;
+        }
+        if (IsKeyPressed(KEY_RIGHT))
+        {
+            squareTile.position.x += squareSize;
+        }
+        if (IsKeyPressed(KEY_UP))
+        {
+            squareTile.position.y -= squareSize;
+        }
+        if (IsKeyPressed(KEY_DOWN))
+        {
+            squareTile.position.y += squareSize;
+        }
+
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -76,21 +100,7 @@ int main(void)
         drawBoard(screenOffset, squareSize);
 
         // // tile
-        DrawRectangle(screenOffset + 10, ((screenOffset / 2) + 150) + lineWidth, tileSize, tileSize, LIGHTGRAY);
-
-        if (IsKeyPressed(KEY_LEFT))
-        {
-        }
-        if (IsKeyPressed(KEY_RIGHT))
-        {
-            // DrawRectangle((screenOffset + 10) + squareSize, ((screenOffset / 2) + 150) + 10, tileSize, tileSize, RED);
-        }
-        if (IsKeyPressed(KEY_UP))
-        {
-        }
-        if (IsKeyPressed(KEY_DOWN))
-        {
-        }
+        DrawRectangle(squareTile.position.x, squareTile.position.y, tileSize, tileSize, LIGHTGRAY);
 
         EndDrawing();
     }
