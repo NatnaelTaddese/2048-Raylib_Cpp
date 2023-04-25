@@ -7,9 +7,20 @@
 
 #include "raylib.h"
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 #include <string>
 #include <iostream>
+
+// --------------------
+// GLOBAL VARIABLES
+const int screenWidth = 600;
+const int screenHeight = 750;
+const int screenOffset = 50;
+const int squareSize = 120;
+const int lineWidth = 10;
+const int tileSize = squareSize - lineWidth;
 
 struct grid
 {
@@ -43,21 +54,143 @@ struct tile
 // create a vector that stores all the squareTiles
 std::vector<tile> totalTiles;
 
-// --------------------
-// GLOBAL VARIABLES
-const int screenWidth = 600;
-const int screenHeight = 750;
-const int screenOffset = 50;
-const int squareSize = 120;
-const int lineWidth = 10;
-const int tileSize = squareSize - lineWidth;
+// Generate tile
+void generateTile()
+{
+    int x, y;
+
+    do
+    {
+        x = rand() % 5;
+        y = rand() % 5;
+    } while (Grid.gridFilled[x][y]);
+
+    tile tiles;
+    tiles.positionGrid.x = x;
+    tiles.positionGrid.y = y;
+    tiles.position.x = (screenOffset + lineWidth) + ((x - 1) * squareSize);
+    tiles.position.y = (((screenOffset / 2) + 150) + lineWidth) + ((y - 1) * squareSize);
+
+    // occupy the gird
+    Grid.gridFilled[x][y] = true;
+
+    // append to the total tiles vector
+    totalTiles.push_back(tiles);
+}
+
+// draw all tiles
+void DrawTiles(std::vector<tile> &tiles)
+{
+    for (tile t : tiles)
+    {
+        DrawRectangle(t.position.x, t.position.y, tileSize, tileSize, LIGHTGRAY);
+    }
+}
 
 static bool gameOver = false;
 
-void slideTilesLeft();
-void slideTilesRight();
-void slideTilesUp();
-void slideTilesDown();
+void slideTilesLeft(std::vector<tile> &tiles)
+{
+
+        for (tile &t : tiles)
+    {
+        for (int i = 1; i < 5; i++)
+        {
+            if (Grid.gridFilled[t.positionGrid.x - 1][t.positionGrid.y] == false)
+            {
+                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+
+                Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = false;
+                t.position.x -= squareSize;
+                t.positionGrid.x -= 1;
+
+                // update grid fillment
+
+                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+
+                std::cout << t.positionGrid.x << " , " << t.positionGrid.y << std::endl;
+            }
+        }
+        Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = true;
+        std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+    }
+}
+void slideTilesRight(std::vector<tile> &tiles)
+{
+
+    for (tile &t : tiles)
+    {
+        for (int i = 1; i < 5; i++)
+        {
+            if (Grid.gridFilled[t.positionGrid.x + 1][t.positionGrid.y] == false)
+            {
+                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+
+                Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = false;
+                t.position.x += squareSize;
+                t.positionGrid.x += 1;
+
+                // update grid fillment
+
+                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+
+                std::cout << t.positionGrid.x << " , " << t.positionGrid.y << std::endl;
+            }
+        }
+        Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = true;
+        std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+    }
+}
+void slideTilesUp(std::vector<tile> &tiles)
+{
+    for (tile &t : tiles)
+    {
+        for (int i = 1; i < 5; i++)
+        {
+            if (Grid.gridFilled[t.positionGrid.x][t.positionGrid.y - 1] == false)
+            {
+                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+
+                Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = false;
+                t.position.y -= squareSize;
+                t.positionGrid.y -= 1;
+
+                // update grid fillment
+
+                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+
+                std::cout << t.positionGrid.x << " , " << t.positionGrid.y << std::endl;
+            }
+        }
+        Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = true;
+        std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+    }
+}
+void slideTilesDown(std::vector<tile> &tiles)
+{
+    for (tile &t : tiles)
+    {
+        for (int i = 1; i < 5; i++)
+        {
+            if (Grid.gridFilled[t.positionGrid.x][t.positionGrid.y + 1] == false)
+            {
+                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+
+                Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = false;
+                t.position.y += squareSize;
+                t.positionGrid.y += 1;
+
+                // update grid fillment
+
+                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+
+                std::cout << t.positionGrid.x << " , " << t.positionGrid.y << std::endl;
+            }
+        }
+        Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = true;
+        std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+    }
+}
 bool isGridOccupied(std::vector<int>);
 
 void drawBoard(int screenOffset, int squareSize)
@@ -79,8 +212,6 @@ void drawBoard(int screenOffset, int squareSize)
     }
 }
 
-// Generate tile
-
 void initGame()
 {
     // initializing defalut values before running game
@@ -89,10 +220,14 @@ void initGame()
     SetTargetFPS(60);
 
     // set default values for tile
-    squareTile.position.x = screenOffset + lineWidth;
-    squareTile.position.y = ((screenOffset / 2) + 150) + lineWidth;
-    squareTile.positionGrid.x = 1;
-    squareTile.positionGrid.y = 1;
+    // squareTile.position.x = (screenOffset + lineWidth);
+    // squareTile.position.y = ((screenOffset / 2) + 150) + lineWidth;
+    // squareTile.positionGrid.x = 1;
+    // squareTile.positionGrid.y = 1;
+    generateTile();
+    generateTile();
+
+    generateTile();
 }
 
 int main(void)
@@ -103,51 +238,19 @@ int main(void)
     {
         if (IsKeyPressed(KEY_LEFT))
         {
-            for (int i = 1; i < 5; i++)
-            {
-                if (Grid.gridFilled[squareTile.positionGrid.x - 1][squareTile.positionGrid.y] == false)
-                {
-                    squareTile.position.x -= squareSize;
-                    squareTile.positionGrid.x -= 1;
-                    std::cout << squareTile.positionGrid.x << " , " << squareTile.positionGrid.y << std::endl;
-                }
-            }
+            slideTilesLeft(totalTiles);
         }
         if (IsKeyPressed(KEY_RIGHT))
         {
-            for (int i = 1; i < 5; i++)
-            {
-                if (Grid.gridFilled[squareTile.positionGrid.x + 1][squareTile.positionGrid.y] == false)
-                {
-                    squareTile.position.x += squareSize;
-                    squareTile.positionGrid.x += 1;
-                    std::cout << squareTile.positionGrid.x << " , " << squareTile.positionGrid.y << std::endl;
-                }
-            }
+            slideTilesRight(totalTiles);
         }
         if (IsKeyPressed(KEY_UP))
         {
-            for (int i = 1; i < 5; i++)
-            {
-                if (Grid.gridFilled[squareTile.positionGrid.x][squareTile.positionGrid.y - 1] == false)
-                {
-                    squareTile.position.y -= squareSize;
-                    squareTile.positionGrid.y -= 1;
-                    std::cout << squareTile.positionGrid.x << " , " << squareTile.positionGrid.y << std::endl;
-                }
-            }
+            slideTilesUp(totalTiles);
         }
         if (IsKeyPressed(KEY_DOWN))
         {
-            for (int i = 1; i < 5; i++)
-            {
-                if (Grid.gridFilled[squareTile.positionGrid.x][squareTile.positionGrid.y + 1] == false)
-                {
-                    squareTile.position.y += squareSize;
-                    squareTile.positionGrid.y += 1;
-                    std::cout << squareTile.positionGrid.x << " , " << squareTile.positionGrid.y << std::endl;
-                }
-            }
+            slideTilesDown(totalTiles);
         }
 
         BeginDrawing();
@@ -164,7 +267,8 @@ int main(void)
         drawBoard(screenOffset, squareSize);
 
         // // tile
-        DrawRectangle(squareTile.position.x, squareTile.position.y, tileSize, tileSize, LIGHTGRAY);
+        DrawTiles(totalTiles);
+        // DrawRectangle(squareTile.position.x, squareTile.position.y, tileSize, tileSize, LIGHTGRAY);
 
         EndDrawing();
     }
