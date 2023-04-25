@@ -40,6 +40,9 @@ struct tile
 
 } squareTile;
 
+// create a vector that stores all the squareTiles
+std::vector<tile> totalTiles;
+
 // --------------------
 // GLOBAL VARIABLES
 const int screenWidth = 600;
@@ -75,6 +78,8 @@ void drawBoard(int screenOffset, int squareSize)
         DrawRectangle(screenOffset + spacing, ((screenOffset / 2) + 150), lineWidth, (squareSize * 4), GRAY);
     }
 }
+
+// Generate tile
 
 void initGame()
 {
