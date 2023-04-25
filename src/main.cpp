@@ -11,20 +11,34 @@
 #include <string>
 #include <iostream>
 
+struct grid
+{
+    std::vector<std::vector<Vector2>> gridPosition = {
+        {{0, 0}, {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 4}},
+        {{1, 0}, {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}},
+        {{2, 0}, {2, 1}, {2, 2}, {2, 3}, {2, 4}, {2, 5}},
+        {{3, 0}, {3, 1}, {3, 2}, {3, 3}, {3, 4}, {3, 5}},
+        {{4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4}, {4, 5}},
+        {{5, 0}, {5, 1}, {5, 2}, {5, 3}, {5, 4}, {5, 5}},
+    };
+
+    std::vector<std::vector<bool>> gridFilled = {
+        {true, true, true, true, true, true},
+        {true, false, false, false, false, true},
+        {true, false, false, false, false, true},
+        {true, false, false, false, false, true},
+        {true, false, false, false, false, true},
+        {true, true, true, true, true, true}};
+} Grid;
+
 struct tile
 {
     Vector2 position;
+    Vector2 positionGrid;
     Color color;
+    grid tileGrid;
 
 } squareTile;
-
-struct grid
-{
-    std::vector<std::vector<Vector2>> grid = {{{}, {}, {}, {}},
-                                              {{}, {}, {}, {}},
-                                              {{}, {}, {}, {}},
-                                              {{}, {}, {}, {}}};
-};
 
 // --------------------
 // GLOBAL VARIABLES
@@ -33,7 +47,7 @@ const int screenHeight = 750;
 const int screenOffset = 50;
 const int squareSize = 120;
 const int lineWidth = 10;
-const int tileSize = squareSize - 10;
+const int tileSize = squareSize - lineWidth;
 
 static bool gameOver = false;
 
@@ -70,8 +84,10 @@ void initGame()
     SetTargetFPS(60);
 
     // set default values for tile
-    squareTile.position.x = screenOffset + 10;
+    squareTile.position.x = screenOffset + lineWidth;
     squareTile.position.y = ((screenOffset / 2) + 150) + lineWidth;
+    squareTile.positionGrid.x = 1;
+    squareTile.positionGrid.y = 1;
 }
 
 int main(void)
@@ -82,19 +98,51 @@ int main(void)
     {
         if (IsKeyPressed(KEY_LEFT))
         {
-            squareTile.position.x -= squareSize;
+            for (int i = 1; i < 5; i++)
+            {
+                if (Grid.gridFilled[squareTile.positionGrid.x - 1][squareTile.positionGrid.y] == false)
+                {
+                    squareTile.position.x -= squareSize;
+                    squareTile.positionGrid.x -= 1;
+                    std::cout << squareTile.positionGrid.x << " , " << squareTile.positionGrid.y << std::endl;
+                }
+            }
         }
         if (IsKeyPressed(KEY_RIGHT))
         {
-            squareTile.position.x += squareSize;
+            for (int i = 1; i < 5; i++)
+            {
+                if (Grid.gridFilled[squareTile.positionGrid.x + 1][squareTile.positionGrid.y] == false)
+                {
+                    squareTile.position.x += squareSize;
+                    squareTile.positionGrid.x += 1;
+                    std::cout << squareTile.positionGrid.x << " , " << squareTile.positionGrid.y << std::endl;
+                }
+            }
         }
         if (IsKeyPressed(KEY_UP))
         {
-            squareTile.position.y -= squareSize;
+            for (int i = 1; i < 5; i++)
+            {
+                if (Grid.gridFilled[squareTile.positionGrid.x][squareTile.positionGrid.y - 1] == false)
+                {
+                    squareTile.position.y -= squareSize;
+                    squareTile.positionGrid.y -= 1;
+                    std::cout << squareTile.positionGrid.x << " , " << squareTile.positionGrid.y << std::endl;
+                }
+            }
         }
         if (IsKeyPressed(KEY_DOWN))
         {
-            squareTile.position.y += squareSize;
+            for (int i = 1; i < 5; i++)
+            {
+                if (Grid.gridFilled[squareTile.positionGrid.x][squareTile.positionGrid.y + 1] == false)
+                {
+                    squareTile.position.y += squareSize;
+                    squareTile.positionGrid.y += 1;
+                    std::cout << squareTile.positionGrid.x << " , " << squareTile.positionGrid.y << std::endl;
+                }
+            }
         }
 
         BeginDrawing();
