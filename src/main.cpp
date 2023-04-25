@@ -7,6 +7,7 @@
 
 #include "raylib.h"
 #include <vector>
+#include <array>
 #include <cstdlib>
 #include <ctime>
 
@@ -53,6 +54,7 @@ struct tile
 
 // create a vector that stores all the squareTiles
 std::vector<tile> totalTiles;
+std::array<std::array<tile, 4>, 4> totalTile;
 
 // Generate tile
 void generateTile()
@@ -76,6 +78,7 @@ void generateTile()
 
     // append to the total tiles vector
     totalTiles.push_back(tiles);
+    totalTile[x - 1][y - 1] = tiles;
 }
 
 // draw all tiles
@@ -92,7 +95,7 @@ static bool gameOver = false;
 void slideTilesLeft(std::vector<tile> &tiles)
 {
 
-        for (tile &t : tiles)
+    for (tile &t : tiles)
     {
         for (int i = 1; i < 5; i++)
         {
