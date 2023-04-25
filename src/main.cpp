@@ -55,6 +55,8 @@ struct tile
 // create a vector that stores all the squareTiles
 std::vector<tile> totalTiles;
 std::array<std::array<tile, 4>, 4> totalTile;
+bool isGridOccupied(std::vector<int>);
+static bool gameOver = false;
 
 // Generate tile
 void generateTile()
@@ -89,8 +91,6 @@ void DrawTiles(std::vector<tile> &tiles)
         DrawRectangle(t.position.x, t.position.y, tileSize, tileSize, LIGHTGRAY);
     }
 }
-
-static bool gameOver = false;
 
 void slideTilesLeft(std::vector<tile> &tiles)
 {
@@ -194,7 +194,6 @@ void slideTilesDown(std::vector<tile> &tiles)
         std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
     }
 }
-bool isGridOccupied(std::vector<int>);
 
 void drawBoard(int screenOffset, int squareSize)
 {
@@ -227,7 +226,7 @@ void initGame()
     // squareTile.position.y = ((screenOffset / 2) + 150) + lineWidth;
     // squareTile.positionGrid.x = 1;
     // squareTile.positionGrid.y = 1;
-    generateTile();
+    // generateTile();
     generateTile();
 
     generateTile();
