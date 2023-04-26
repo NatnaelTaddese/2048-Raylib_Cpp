@@ -1,3 +1,5 @@
+## currently unfinished
+
 # Get Raylib
 
 If you wish to use a specific version of raylib, follow the instructions below. If you want the current development version, skip this section and premake will download raylib for you.
