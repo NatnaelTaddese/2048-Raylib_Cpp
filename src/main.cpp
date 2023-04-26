@@ -52,7 +52,7 @@ struct tile
 
 } squareTile;
 
-// create a vector that stores all the squareTiles
+// vector that stores all the squareTiles
 std::vector<tile> totalTiles;
 std::array<std::array<tile, 4>, 4> totalTile;
 bool isGridOccupied(std::vector<int>);
