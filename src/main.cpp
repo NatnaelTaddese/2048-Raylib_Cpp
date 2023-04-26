@@ -195,6 +195,13 @@ void slideTilesDown(std::vector<tile> &tiles)
     }
 }
 
+// add tiles according to the movement applied
+void addTilesleft(std::vector<tile> &tiles);
+void addTilesRight(std::vector<tile> &tiles);
+void addTilesUp(std::vector<tile> &tiles);
+void addTilesDown(std::vector<tile> &tiles);
+
+// draw the playing square board
 void drawBoard(int screenOffset, int squareSize)
 {
     // grid background rectangle
