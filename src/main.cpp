@@ -84,7 +84,7 @@ void generateTile()
 }
 
 // draw all tiles
-void DrawTiles(std::vector<tile> &tiles)
+inline void DrawTiles(std::vector<tile> &tiles)
 {
     for (tile t : tiles)
     {
