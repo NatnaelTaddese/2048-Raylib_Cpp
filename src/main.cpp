@@ -85,14 +85,14 @@ void generateTile()
 }
 
 // draw all tiles
-inline void DrawTiles(std::vector<tile> &tiles)
-{
-    for (tile t : tiles)
-    {
-        DrawRectangle(t.position.x, t.position.y, tileSize, tileSize, LIGHTGRAY);
-        DrawText(std::to_string(t.numValue).c_str(), (t.position.x + (tileSize / 2) - 10), (t.position.y + (tileSize / 2) - 30), 60, RED);
-    }
-}
+// inline void DrawTiles(std::vector<tile> &tiles)
+// {
+//     for (tile t : tiles)
+//     {
+//         DrawRectangle(t.position.x, t.position.y, tileSize, tileSize, LIGHTGRAY);
+//         DrawText(std::to_string(t.numValue).c_str(), (t.position.x + (tileSize / 2) - 10), (t.position.y + (tileSize / 2) - 30), 60, RED);
+//     }
+// }
 
 inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 {
@@ -253,6 +253,7 @@ void initGame()
     // squareTile.positionGrid.y = 1;
     // generateTile();
 
+    // fill the array with default tile
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 4; j++)
