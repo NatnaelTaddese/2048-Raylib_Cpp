@@ -8,10 +8,9 @@
 #include "raylib.h"
 #include <vector>
 #include <array>
+#include <string>
 #include <cstdlib>
 #include <ctime>
-
-#include <string>
 #include <iostream>
 
 // --------------------
@@ -25,14 +24,14 @@ const int tileSize = squareSize - lineWidth;
 
 struct grid
 {
-    std::vector<std::vector<Vector2>> gridPosition = {
-        {{0, 0}, {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 4}},
-        {{1, 0}, {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}},
-        {{2, 0}, {2, 1}, {2, 2}, {2, 3}, {2, 4}, {2, 5}},
-        {{3, 0}, {3, 1}, {3, 2}, {3, 3}, {3, 4}, {3, 5}},
-        {{4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4}, {4, 5}},
-        {{5, 0}, {5, 1}, {5, 2}, {5, 3}, {5, 4}, {5, 5}},
-    };
+    // std::vector<std::vector<Vector2>> gridPosition = {
+    //     {{0, 0}, {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 4}},
+    //     {{1, 0}, {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}},
+    //     {{2, 0}, {2, 1}, {2, 2}, {2, 3}, {2, 4}, {2, 5}},
+    //     {{3, 0}, {3, 1}, {3, 2}, {3, 3}, {3, 4}, {3, 5}},
+    //     {{4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4}, {4, 5}},
+    //     {{5, 0}, {5, 1}, {5, 2}, {5, 3}, {5, 4}, {5, 5}},
+    // };
 
     std::vector<std::vector<bool>> gridFilled = {
         {true, true, true, true, true, true},
@@ -48,13 +47,14 @@ struct tile
     Vector2 position;
     Vector2 positionGrid;
     Color color;
-    grid tileGrid;
+    int numValue = 0;
 
 } squareTile;
 
 // vector that stores all the squareTiles
 std::vector<tile> totalTiles;
 std::array<std::array<tile, 4>, 4> totalTile;
+
 bool isGridOccupied(std::vector<int>);
 static bool gameOver = false;
 
@@ -81,6 +81,7 @@ void generateTile()
     // append to the total tiles vector
     totalTiles.push_back(tiles);
     totalTile[x - 1][y - 1] = tiles;
+    totalTile[x - 1][y - 1].numValue = 2;
 }
 
 // draw all tiles
@@ -89,6 +90,23 @@ inline void DrawTiles(std::vector<tile> &tiles)
     for (tile t : tiles)
     {
         DrawRectangle(t.position.x, t.position.y, tileSize, tileSize, LIGHTGRAY);
+        DrawText(std::to_string(t.numValue).c_str(), (t.position.x + (tileSize / 2) - 10), (t.position.y + (tileSize / 2) - 30), 60, RED);
+    }
+}
+
+inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (totalTile[i][j].numValue != 0)
+            {
+
+                DrawRectangle(totalTile[i][j].position.x, totalTile[i][j].position.y, tileSize, tileSize, LIGHTGRAY);
+                DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].position.x + (tileSize / 2) - 10), (totalTile[i][j].position.y + (tileSize / 2) - 30), 60, RED);
+            }
+        }
     }
 }
 
@@ -234,6 +252,14 @@ void initGame()
     // squareTile.positionGrid.x = 1;
     // squareTile.positionGrid.y = 1;
     // generateTile();
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            totalTile[i][j] = squareTile;
+        }
+    }
     generateTile();
 
     generateTile();
@@ -276,7 +302,7 @@ int main(void)
         drawBoard(screenOffset, squareSize);
 
         // // tile
-        DrawTiles(totalTiles);
+        DrawTiles(totalTile);
         // DrawRectangle(squareTile.position.x, squareTile.position.y, tileSize, tileSize, LIGHTGRAY);
 
         EndDrawing();
