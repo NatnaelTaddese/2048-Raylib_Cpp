@@ -13,7 +13,6 @@
 #include <ctime>
 #include <iostream>
 
-// --------------------
 // GLOBAL VARIABLES
 const int screenWidth = 600;
 const int screenHeight = 750;
@@ -24,14 +23,8 @@ const int tileSize = squareSize - lineWidth;
 
 struct grid
 {
-    // std::vector<std::vector<Vector2>> gridPosition = {
-    //     {{0, 0}, {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 4}},
-    //     {{1, 0}, {1, 1}, {1, 2}, {1, 3}, {1, 4}, {1, 5}},
-    //     {{2, 0}, {2, 1}, {2, 2}, {2, 3}, {2, 4}, {2, 5}},
-    //     {{3, 0}, {3, 1}, {3, 2}, {3, 3}, {3, 4}, {3, 5}},
-    //     {{4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4}, {4, 5}},
-    //     {{5, 0}, {5, 1}, {5, 2}, {5, 3}, {5, 4}, {5, 5}},
-    // };
+    Color backgroundColor = DARKGRAY;
+    Color gridColor = GRAY;
 
     std::vector<std::vector<bool>> gridFilled = {
         {true, true, true, true, true, true},
@@ -44,19 +37,16 @@ struct grid
 
 struct tile
 {
-    Vector2 position;
-    Vector2 positionGrid;
+    Vector2 absolutePosition;
+    Vector2 relativePosition;
     Color color;
     int numValue = 0;
 
-} squareTile;
+} defaultTile;
 
 // vector that stores all the squareTiles
 std::vector<tile> totalTiles;
 std::array<std::array<tile, 4>, 4> totalTile;
-
-bool isGridOccupied(std::vector<int>);
-static bool gameOver = false;
 
 // Generate tile
 void generateTile()
@@ -70,10 +60,10 @@ void generateTile()
     } while (Grid.gridFilled[x][y]);
 
     tile tiles;
-    tiles.positionGrid.x = x;
-    tiles.positionGrid.y = y;
-    tiles.position.x = (screenOffset + lineWidth) + ((x - 1) * squareSize);
-    tiles.position.y = (((screenOffset / 2) + 150) + lineWidth) + ((y - 1) * squareSize);
+    tiles.relativePosition.x = x;
+    tiles.relativePosition.y = y;
+    tiles.absolutePosition.x = (screenOffset + lineWidth) + ((x - 1) * squareSize);
+    tiles.absolutePosition.y = (((screenOffset / 2) + 150) + lineWidth) + ((y - 1) * squareSize);
     tiles.numValue = 2;
 
     // occupy the gird
@@ -90,8 +80,8 @@ inline void DrawTiles(std::vector<tile> &tiles)
 {
     for (tile t : tiles)
     {
-        DrawRectangle(t.position.x, t.position.y, tileSize, tileSize, LIGHTGRAY);
-        DrawText(std::to_string(t.numValue).c_str(), (t.position.x + (tileSize / 2) - 10), (t.position.y + (tileSize / 2) - 30), 60, RED);
+        DrawRectangle(t.absolutePosition.x, t.absolutePosition.y, tileSize, tileSize, LIGHTGRAY);
+        DrawText(std::to_string(t.numValue).c_str(), (t.absolutePosition.x + (tileSize / 2) - 10), (t.absolutePosition.y + (tileSize / 2) - 30), 60, RED);
     }
 }
 
@@ -104,8 +94,8 @@ inline void DrawTiles(std::vector<tile> &tiles)
 //             if (totalTile[i][j].numValue != 0)
 //             {
 
-//                 DrawRectangle(totalTile[i][j].position.x, totalTile[i][j].position.y, tileSize, tileSize, LIGHTGRAY);
-//                 DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].position.x + (tileSize / 2) - 10), (totalTile[i][j].position.y + (tileSize / 2) - 30), 60, RED);
+//                 DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, LIGHTGRAY);
+//                 DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10), (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60, RED);
 //             }
 //         }
 //     }
@@ -118,8 +108,26 @@ inline void DrawTiles(std::vector<tile> &tiles)
 //     {
 //         for (int j = 0; j < 4; j++)
 //         {
+//            for (int i = 1; i < 5; i++)
+//         {
+//             if (Grid.gridFilled[totalTile[i][j].relativePosition.x - 1][totalTile[i][j].relativePosition.y] == false)
+//             {
+//                 // std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-//             std::cout << "tile: " << i << j << std::endl;
+//                 Grid.gridFilled[totalTile[i][j].relativePosition.x][totalTile[i][j].relativePosition.y] = false;
+
+//                 tile swap;
+//                 totalTile[i][j] = swap;
+//                 totalTile[i][j] = totalTile[i][j - 1];
+
+//                 // update grid fillment
+
+//                 // std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
+
+//                 // std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
+//             }
+//         }
+
 //         }
 //     }
 // }
@@ -131,23 +139,23 @@ void slideTilesLeft(std::vector<tile> &tiles)
     {
         for (int i = 1; i < 5; i++)
         {
-            if (Grid.gridFilled[t.positionGrid.x - 1][t.positionGrid.y] == false)
+            if (Grid.gridFilled[t.relativePosition.x - 1][t.relativePosition.y] == false)
             {
-                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-                Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = false;
-                t.position.x -= squareSize;
-                t.positionGrid.x -= 1;
+                Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = false;
+                t.absolutePosition.x -= squareSize;
+                t.relativePosition.x -= 1;
 
                 // update grid fillment
 
-                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-                std::cout << t.positionGrid.x << " , " << t.positionGrid.y << std::endl;
+                std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
             }
         }
-        Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = true;
-        // std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+        Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = true;
+        // std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
     }
 }
 void slideTilesRight(std::vector<tile> &tiles)
@@ -157,23 +165,23 @@ void slideTilesRight(std::vector<tile> &tiles)
     {
         for (int i = 1; i < 5; i++)
         {
-            if (Grid.gridFilled[t.positionGrid.x + 1][t.positionGrid.y] == false)
+            if (Grid.gridFilled[t.relativePosition.x + 1][t.relativePosition.y] == false)
             {
-                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-                Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = false;
-                t.position.x += squareSize;
-                t.positionGrid.x += 1;
+                Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = false;
+                t.absolutePosition.x += squareSize;
+                t.relativePosition.x += 1;
 
                 // update grid fillment
 
-                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-                std::cout << t.positionGrid.x << " , " << t.positionGrid.y << std::endl;
+                std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
             }
         }
-        Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = true;
-        std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+        Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = true;
+        std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
     }
 }
 void slideTilesUp(std::vector<tile> &tiles)
@@ -182,23 +190,23 @@ void slideTilesUp(std::vector<tile> &tiles)
     {
         for (int i = 1; i < 5; i++)
         {
-            if (Grid.gridFilled[t.positionGrid.x][t.positionGrid.y - 1] == false)
+            if (Grid.gridFilled[t.relativePosition.x][t.relativePosition.y - 1] == false)
             {
-                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-                Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = false;
-                t.position.y -= squareSize;
-                t.positionGrid.y -= 1;
+                Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = false;
+                t.absolutePosition.y -= squareSize;
+                t.relativePosition.y -= 1;
 
                 // update grid fillment
 
-                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-                std::cout << t.positionGrid.x << " , " << t.positionGrid.y << std::endl;
+                std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
             }
         }
-        Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = true;
-        std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+        Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = true;
+        std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
     }
 }
 void slideTilesDown(std::vector<tile> &tiles)
@@ -207,23 +215,23 @@ void slideTilesDown(std::vector<tile> &tiles)
     {
         for (int i = 1; i < 5; i++)
         {
-            if (Grid.gridFilled[t.positionGrid.x][t.positionGrid.y + 1] == false)
+            if (Grid.gridFilled[t.relativePosition.x][t.relativePosition.y + 1] == false)
             {
-                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-                Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = false;
-                t.position.y += squareSize;
-                t.positionGrid.y += 1;
+                Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = false;
+                t.absolutePosition.y += squareSize;
+                t.relativePosition.y += 1;
 
                 // update grid fillment
 
-                std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
 
-                std::cout << t.positionGrid.x << " , " << t.positionGrid.y << std::endl;
+                std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
             }
         }
-        Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] = true;
-        std::cout << Grid.gridFilled[t.positionGrid.x][t.positionGrid.y] << std::endl;
+        Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = true;
+        std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
     }
 }
 
@@ -237,19 +245,19 @@ void sumTilesDown(std::vector<tile> &tiles);
 void drawBoard(int screenOffset, int squareSize)
 {
     // grid background rectangle
-    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4), (squareSize * 4), DARKGRAY);
+    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4), (squareSize * 4), Grid.backgroundColor);
 
     // horizontal grid
     for (int i = 0; i < 5; i++)
     {
         int spacing = squareSize * i;
-        DrawRectangle(screenOffset, ((screenOffset / 2) + 150) + spacing, (squareSize * 4) + lineWidth, lineWidth, GRAY);
+        DrawRectangle(screenOffset, ((screenOffset / 2) + 150) + spacing, (squareSize * 4) + lineWidth, lineWidth, Grid.gridColor);
     }
     // vertical grid
     for (int i = 0; i < 5; i++)
     {
         int spacing = squareSize * i;
-        DrawRectangle(screenOffset + spacing, ((screenOffset / 2) + 150), lineWidth, (squareSize * 4), GRAY);
+        DrawRectangle(screenOffset + spacing, ((screenOffset / 2) + 150), lineWidth, (squareSize * 4), Grid.gridColor);
     }
 }
 
@@ -260,24 +268,26 @@ void initGame()
 
     SetTargetFPS(60);
 
-    // set default values for tile
-    // squareTile.position.x = (screenOffset + lineWidth);
-    // squareTile.position.y = ((screenOffset / 2) + 150) + lineWidth;
-    // squareTile.positionGrid.x = 1;
-    // squareTile.positionGrid.y = 1;
-    // generateTile();
-
     // fill the array with default tile
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 4; j++)
         {
-            totalTile[i][j] = squareTile;
+            totalTile[i][j] = defaultTile;
         }
     }
     generateTile();
-
     generateTile();
+}
+
+void drawHeader()
+{
+    // header text defaults
+    DrawText("2048", screenOffset, screenOffset / 2, 80, LIGHTGRAY);
+
+    // score board
+    DrawRectangle(screenOffset + lineWidth + 3 * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize, BROWN);
+    DrawText("Score", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2, 20, LIGHTGRAY);
 }
 
 int main(void)
@@ -324,18 +334,14 @@ int main(void)
 
         ClearBackground(RAYWHITE);
 
-        // header text defaults
-        DrawText("2048", screenOffset, screenOffset / 2, 80, LIGHTGRAY);
-
-        DrawRectangle(screenOffset + lineWidth + 3 * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize, BROWN);
-        DrawText("Score", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2, 20, LIGHTGRAY);
+        // draw header
+        drawHeader();
 
         // draw board
         drawBoard(screenOffset, squareSize);
 
         // // tile
         DrawTiles(totalTiles);
-        // DrawRectangle(squareTile.position.x, squareTile.position.y, tileSize, tileSize, LIGHTGRAY);
 
         EndDrawing();
     }
