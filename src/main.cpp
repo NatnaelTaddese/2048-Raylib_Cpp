@@ -20,7 +20,7 @@ const int squareSize = 120;
 const int lineWidth = 10;
 const int tileSize = squareSize - lineWidth;
 
-struct grid
+struct
 {
     Color backgroundColor = DARKGRAY;
     Color gridColor = GRAY;
@@ -40,12 +40,11 @@ struct tile
     Vector2 relativePosition;
     Color color;
     int numValue = 0;
+    bool isOccupied = false;
 
 } defaultTile;
 
 // vector that stores all the squareTiles
-std::vector<tile> totalTiles;
-
 std::array<std::array<tile, 4>, 4> totalTile;
 
 // Generate tile
@@ -65,25 +64,16 @@ void generateTile()
     tiles.absolutePosition.x = (screenOffset + lineWidth) + ((x - 1) * squareSize);
     tiles.absolutePosition.y = (((screenOffset / 2) + 150) + lineWidth) + ((y - 1) * squareSize);
     tiles.numValue = 2;
+    tiles.isOccupied = true;
 
     // occupy the gird
     Grid.gridFilled[x][y] = true;
 
     // append to the total tiles vector
-    totalTiles.push_back(tiles);
     totalTile[x - 1][y - 1] = tiles;
 }
 
-// // draw all tiles
-// inline void DrawTiles(std::vector<tile> &tiles)
-// {
-//     for (tile t : tiles)
-//     {
-//         DrawRectangle(t.absolutePosition.x, t.absolutePosition.y, tileSize, tileSize, LIGHTGRAY);
-//         DrawText(std::to_string(t.numValue).c_str(), (t.absolutePosition.x + (tileSize / 2) - 10), (t.absolutePosition.y + (tileSize / 2) - 30), 60, RED);
-//     }
-// }
-
+// draw all tiles
 inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 {
     for (int i = 0; i < 4; i++)
@@ -137,21 +127,21 @@ void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
     {
         for (int j = 0; j < 4; j++)
         {
-            if (totalTile[i][j].numValue == 0)
-            {
-                continue;
-            }
-            if (Grid.gridFilled[(totalTile[i][j].relativePosition.x) - 1][totalTile[i][j].relativePosition.y] == false)
+            // if (totalTile[i][j].numValue == 0)
+            // {
+            //     continue;
+            // }
+            if (Grid.gridFilled[i + 1][j] == false)
             {
                 std::cout << "Left Possible for " << i << j << std::endl;
-                Grid.gridFilled[totalTile[i][j].relativePosition.x][totalTile[i][j].relativePosition.y] = false;
+                // Grid.gridFilled[totalTile[i][j].relativePosition.x][totalTile[i][j].relativePosition.y] = false;
 
-                totalTile[i][j].absolutePosition.x -= squareSize;
-                totalTile[i][j].relativePosition.x -= 1;
+                // totalTile[i][j].absolutePosition.x -= squareSize;
+                // totalTile[i][j].relativePosition.x -= 1;
 
-                totalTile[i][j - 1] = totalTile[i][j];
-                totalTile[i][j] = defaultTile;
-                Grid.gridFilled[totalTile[i][j - 1].relativePosition.x][totalTile[i][j - 1].relativePosition.y] = true;
+                // totalTile[i][j - 1] = totalTile[i][j];
+                // totalTile[i][j] = defaultTile;
+                // Grid.gridFilled[totalTile[i][j - 1].relativePosition.x][totalTile[i][j - 1].relativePosition.y] = true;
             }
         }
     }
@@ -326,30 +316,30 @@ int main(void)
     {
         if (IsKeyPressed(KEY_LEFT))
         {
-            for (int i = 0; i < 4; i++)
-            {
-                slideTilesLeft(totalTile);
-            }
+            // for (int i = 0; i < 4; i++)
+            // {
+            slideTilesLeft(totalTile);
+            // }
         }
         if (IsKeyPressed(KEY_RIGHT))
         {
             for (int i = 0; i < 4; i++)
             {
-                slideTilesRight(totalTiles);
+                // slideTilesRight(totalTile);
             }
         }
         if (IsKeyPressed(KEY_UP))
         {
             for (int i = 0; i < 4; i++)
             {
-                slideTilesUp(totalTiles);
+                // slideTilesUp(totalTile);
             }
         }
         if (IsKeyPressed(KEY_DOWN))
         {
             for (int i = 0; i < 4; i++)
             {
-                slideTilesDown(totalTiles);
+                // slideTilesDown(totalTile);
             }
         }
         // for debugging
