@@ -1,7 +1,6 @@
 /*******************************************************************************************
  *
  *   raylib [core]
- *   Copyright (c) 2013-2023 Ramon Santamaria (@raysan5)
  *
  ********************************************************************************************/
 
@@ -46,6 +45,7 @@ struct tile
 
 // vector that stores all the squareTiles
 std::vector<tile> totalTiles;
+
 std::array<std::array<tile, 4>, 4> totalTile;
 
 // Generate tile
@@ -72,34 +72,33 @@ void generateTile()
     // append to the total tiles vector
     totalTiles.push_back(tiles);
     totalTile[x - 1][y - 1] = tiles;
-    totalTile[x - 1][y - 1].numValue = 2;
 }
 
-// draw all tiles
-inline void DrawTiles(std::vector<tile> &tiles)
-{
-    for (tile t : tiles)
-    {
-        DrawRectangle(t.absolutePosition.x, t.absolutePosition.y, tileSize, tileSize, LIGHTGRAY);
-        DrawText(std::to_string(t.numValue).c_str(), (t.absolutePosition.x + (tileSize / 2) - 10), (t.absolutePosition.y + (tileSize / 2) - 30), 60, RED);
-    }
-}
-
-// inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
+// // draw all tiles
+// inline void DrawTiles(std::vector<tile> &tiles)
 // {
-//     for (int i = 0; i < 4; i++)
+//     for (tile t : tiles)
 //     {
-//         for (int j = 0; j < 4; j++)
-//         {
-//             if (totalTile[i][j].numValue != 0)
-//             {
-
-//                 DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, LIGHTGRAY);
-//                 DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10), (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60, RED);
-//             }
-//         }
+//         DrawRectangle(t.absolutePosition.x, t.absolutePosition.y, tileSize, tileSize, LIGHTGRAY);
+//         DrawText(std::to_string(t.numValue).c_str(), (t.absolutePosition.x + (tileSize / 2) - 10), (t.absolutePosition.y + (tileSize / 2) - 30), 60, RED);
 //     }
 // }
+
+inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (totalTile[i][j].numValue != 0)
+            {
+
+                DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, LIGHTGRAY);
+                DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10), (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60, RED);
+            }
+        }
+    }
+}
 
 // void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
 // {
@@ -131,6 +130,32 @@ inline void DrawTiles(std::vector<tile> &tiles)
 //         }
 //     }
 // }
+
+void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (totalTile[i][j].numValue == 0)
+            {
+                continue;
+            }
+            if (Grid.gridFilled[(totalTile[i][j].relativePosition.x) - 1][totalTile[i][j].relativePosition.y] == false)
+            {
+                std::cout << "Left Possible for " << i << j << std::endl;
+                Grid.gridFilled[totalTile[i][j].relativePosition.x][totalTile[i][j].relativePosition.y] = false;
+
+                totalTile[i][j].absolutePosition.x -= squareSize;
+                totalTile[i][j].relativePosition.x -= 1;
+
+                totalTile[i][j - 1] = totalTile[i][j];
+                totalTile[i][j] = defaultTile;
+                Grid.gridFilled[totalTile[i][j - 1].relativePosition.x][totalTile[i][j - 1].relativePosition.y] = true;
+            }
+        }
+    }
+}
 
 void slideTilesLeft(std::vector<tile> &tiles)
 {
@@ -278,6 +303,9 @@ void initGame()
     }
     generateTile();
     generateTile();
+    generateTile();
+    generateTile();
+    generateTile();
 }
 
 void drawHeader()
@@ -300,7 +328,7 @@ int main(void)
         {
             for (int i = 0; i < 4; i++)
             {
-                slideTilesLeft(totalTiles);
+                slideTilesLeft(totalTile);
             }
         }
         if (IsKeyPressed(KEY_RIGHT))
@@ -341,7 +369,7 @@ int main(void)
         drawBoard(screenOffset, squareSize);
 
         // // tile
-        DrawTiles(totalTiles);
+        DrawTiles(totalTile);
 
         EndDrawing();
     }
