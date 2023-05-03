@@ -54,23 +54,23 @@ void generateTile()
 
     do
     {
-        x = rand() % 5;
-        y = rand() % 5;
-    } while (Grid.gridFilled[x][y]);
+        x = rand() % 4;
+        y = rand() % 4;
+    } while (totalTile[y][x].isOccupied);
 
     tile tiles;
     tiles.relativePosition.x = x;
     tiles.relativePosition.y = y;
-    tiles.absolutePosition.x = (screenOffset + lineWidth) + ((x - 1) * squareSize);
-    tiles.absolutePosition.y = (((screenOffset / 2) + 150) + lineWidth) + ((y - 1) * squareSize);
+    tiles.absolutePosition.x = (screenOffset + lineWidth) + ((x)*squareSize);
+    tiles.absolutePosition.y = (((screenOffset / 2) + 150) + lineWidth) + ((y)*squareSize);
     tiles.numValue = 2;
     tiles.isOccupied = true;
 
     // occupy the gird
-    Grid.gridFilled[x][y] = true;
 
     // append to the total tiles vector
-    totalTile[x - 1][y - 1] = tiles;
+    totalTile[y][x] = tiles;
+    std::cout << "Generated: " << y << x << " " << std::endl;
 }
 
 // draw all tiles
@@ -125,25 +125,26 @@ void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
 {
     for (int i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (int j = 1; j < 4; j++)
         {
             // if (totalTile[i][j].numValue == 0)
             // {
             //     continue;
             // }
-            if (Grid.gridFilled[i + 1][j] == false)
+            if (totalTile[i][j].isOccupied && totalTile[i][j - 1].isOccupied == false)
             {
                 std::cout << "Left Possible for " << i << j << std::endl;
                 // Grid.gridFilled[totalTile[i][j].relativePosition.x][totalTile[i][j].relativePosition.y] = false;
 
-                // totalTile[i][j].absolutePosition.x -= squareSize;
-                // totalTile[i][j].relativePosition.x -= 1;
+                totalTile[i][j].absolutePosition.x -= squareSize;
+                totalTile[i][j].relativePosition.x -= 1;
 
-                // totalTile[i][j - 1] = totalTile[i][j];
-                // totalTile[i][j] = defaultTile;
+                totalTile[i][j - 1] = totalTile[i][j];
+                totalTile[i][j] = defaultTile;
                 // Grid.gridFilled[totalTile[i][j - 1].relativePosition.x][totalTile[i][j - 1].relativePosition.y] = true;
             }
         }
+        std::cout << std::endl;
     }
 }
 
@@ -316,10 +317,10 @@ int main(void)
     {
         if (IsKeyPressed(KEY_LEFT))
         {
-            // for (int i = 0; i < 4; i++)
-            // {
-            slideTilesLeft(totalTile);
-            // }
+            for (int i = 0; i < 4; i++)
+            {
+                slideTilesLeft(totalTile);
+            }
         }
         if (IsKeyPressed(KEY_RIGHT))
         {
