@@ -168,37 +168,90 @@ void slideTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
     }
 }
 
-// void slideTilesDown(std::vector<tile> &tiles)
-// {
-//     for (tile &t : tiles)
-//     {
-//         for (int i = 1; i < 5; i++)
-//         {
-//             if (Grid.gridFilled[t.relativePosition.x][t.relativePosition.y + 1] == false)
-//             {
-//                 std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-
-//                 Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = false;
-//                 t.absolutePosition.y += squareSize;
-//                 t.relativePosition.y += 1;
-
-//                 // update grid fillment
-
-//                 std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-
-//                 std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
-//             }
-//         }
-//         Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = true;
-//         std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-//     }
-// }
-
 // sum tiles according to the movement applied
-void sumTilesleft(std::vector<tile> &tiles);
-void sumTilesRight(std::vector<tile> &tiles);
-void sumTilesUp(std::vector<tile> &tiles);
-void sumTilesDown(std::vector<tile> &tiles);
+void sumTilesleft(std::array<std::array<tile, 4>, 4> &totalTile)
+{
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 1; j < 4; j++)
+        {
+
+            if ((totalTile[i][j].isOccupied && totalTile[i][j - 1].isOccupied) && (totalTile[i][j].numValue == totalTile[i][j - 1].numValue))
+            {
+                std::cout << "Left Add Possible for " << i << j << std::endl;
+
+                totalTile[i][j - 1].numValue *= 2;
+
+                totalTile[i][j] = defaultTile;
+            }
+        }
+        std::cout << std::endl;
+    }
+    slideTilesLeft(totalTile);
+}
+void sumTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
+{
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 2; j >= 0; j--)
+        {
+
+            if ((totalTile[i][j].isOccupied && totalTile[i][j + 1].isOccupied) && (totalTile[i][j].numValue == totalTile[i][j + 1].numValue))
+            {
+                std::cout << "Right Add Possible for " << i << j << std::endl;
+
+                totalTile[i][j + 1].numValue *= 2;
+
+                totalTile[i][j] = defaultTile;
+            }
+        }
+        std::cout << std::endl;
+    }
+    slideTilesRight(totalTile);
+}
+
+void sumTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
+{
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 1; j < 4; j++)
+        {
+
+            if ((totalTile[j][i].isOccupied && totalTile[j - 1][i].isOccupied) && (totalTile[j][i].numValue == totalTile[j - 1][i].numValue))
+            {
+                std::cout << "Up Add Possible for " << j << i << std::endl;
+
+                totalTile[j - 1][i].numValue *= 2;
+                totalTile[j][i] = defaultTile;
+            }
+        }
+        std::cout << std::endl;
+    }
+    slideTilesUp(totalTile);
+}
+void sumTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
+{
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 2; j >= 0; j--)
+        {
+
+            if ((totalTile[j][i].isOccupied && totalTile[j + 1][i].isOccupied) && (totalTile[j][i].numValue == totalTile[j + 1][i].numValue))
+            {
+                std::cout << "Down Possible for " << j << i << std::endl;
+
+                totalTile[j + 1][i].numValue *= 2;
+                totalTile[j][i] = defaultTile;
+            }
+        }
+        std::cout << std::endl;
+    }
+    slideTilesDown(totalTile);
+}
 
 // draw the playing square board
 void drawBoard(int screenOffset, int squareSize)
@@ -264,6 +317,7 @@ int main(void)
             {
                 slideTilesLeft(totalTile);
             }
+            sumTilesleft(totalTile);
         }
         if (IsKeyPressed(KEY_RIGHT))
         {
@@ -271,6 +325,7 @@ int main(void)
             {
                 slideTilesRight(totalTile);
             }
+            sumTilesRight(totalTile);
         }
         if (IsKeyPressed(KEY_UP))
         {
@@ -278,6 +333,7 @@ int main(void)
             {
                 slideTilesUp(totalTile);
             }
+            sumTilesUp(totalTile);
         }
         if (IsKeyPressed(KEY_DOWN))
         {
@@ -285,6 +341,7 @@ int main(void)
             {
                 slideTilesDown(totalTile);
             }
+            sumTilesDown(totalTile);
         }
         // for debugging
         if (IsKeyPressed(KEY_G))
