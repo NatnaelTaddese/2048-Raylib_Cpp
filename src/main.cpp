@@ -12,6 +12,14 @@
 #include <ctime>
 #include <iostream>
 
+Color TILECOLOR = (Color){238, 225, 201, 255};
+
+Color NUMCOLOR = (Color){119, 110, 101, 255};
+
+Color BGCOLOR = (Color){205, 193, 180, 255};
+
+Color GRIDCOLOR = (Color){187, 173, 160, 255};
+
 // GLOBAL VARIABLES
 const int screenWidth = 600;
 const int screenHeight = 750;
@@ -19,6 +27,8 @@ const int screenOffset = 50;
 const int squareSize = 120;
 const int lineWidth = 10;
 const int tileSize = squareSize - lineWidth;
+int fixFontPosition;
+int fixFontSize;
 
 struct
 {
@@ -30,7 +40,7 @@ struct tile
 {
     Vector2 absolutePosition;
     Vector2 relativePosition;
-    Color color;
+    Color tileColor;
     int numValue = 0;
     bool isOccupied = false;
 
@@ -73,8 +83,18 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
             if (totalTile[i][j].numValue != 0)
             {
 
-                DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, LIGHTGRAY);
-                DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10), (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60, RED);
+                fixFontPosition = totalTile[i][j].numValue < 10 ? 0 : totalTile[i][j].numValue < 20 ? 10
+                                                                  : totalTile[i][j].numValue < 100  ? 20
+                                                                  : totalTile[i][j].numValue < 1000 ? 30
+                                                                                                    : 40;
+
+                fixFontSize = totalTile[i][j].numValue < 100 ? 0 : totalTile[i][j].numValue < 300 ? 10
+                                                               : totalTile[i][j].numValue < 600   ? 6
+                                                               : totalTile[i][j].numValue < 1200  ? 15
+                                                                                                  : 20;
+
+                DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, TILECOLOR);
+                DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, NUMCOLOR);
             }
         }
     }
@@ -101,7 +121,6 @@ void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
         std::cout << std::endl;
     }
 }
-
 void slideTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
 {
     for (int i = 0; i < 4; i++)
@@ -123,7 +142,6 @@ void slideTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
         std::cout << std::endl;
     }
 }
-
 void slideTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
 {
     for (int i = 0; i < 4; i++)
@@ -145,7 +163,6 @@ void slideTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
         std::cout << std::endl;
     }
 }
-
 void slideTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
 {
     for (int i = 0; i < 4; i++)
@@ -211,7 +228,6 @@ void sumTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
     }
     slideTilesRight(totalTile);
 }
-
 void sumTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
 {
 
@@ -257,19 +273,19 @@ void sumTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
 void drawBoard(int screenOffset, int squareSize)
 {
     // grid background rectangle
-    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4), (squareSize * 4), Grid.backgroundColor);
+    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4), (squareSize * 4), BGCOLOR);
 
     // horizontal grid
     for (int i = 0; i < 5; i++)
     {
         int spacing = squareSize * i;
-        DrawRectangle(screenOffset, ((screenOffset / 2) + 150) + spacing, (squareSize * 4) + lineWidth, lineWidth, Grid.gridColor);
+        DrawRectangle(screenOffset, ((screenOffset / 2) + 150) + spacing, (squareSize * 4) + lineWidth, lineWidth, GRIDCOLOR);
     }
     // vertical grid
     for (int i = 0; i < 5; i++)
     {
         int spacing = squareSize * i;
-        DrawRectangle(screenOffset + spacing, ((screenOffset / 2) + 150), lineWidth, (squareSize * 4), Grid.gridColor);
+        DrawRectangle(screenOffset + spacing, ((screenOffset / 2) + 150), lineWidth, (squareSize * 4), GRIDCOLOR);
     }
 }
 
@@ -308,6 +324,7 @@ void drawHeader()
 int main(void)
 {
     initGame();
+    // Font gameFont = LoadFont("QuinqueFive.ttf");
 
     while (!WindowShouldClose())
     {
