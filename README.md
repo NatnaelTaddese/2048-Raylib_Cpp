@@ -1,5 +1,9 @@
 ## currently unfinished
 
+Questions you might ask:
+"But Nati, you didn't use OOP, why not write the whole thing in C?"
+Chillax, I'm working with what I know.
+
 # Get Raylib
 
 If you wish to use a specific version of raylib, follow the instructions below. If you want the current development version, skip this section and premake will download raylib for you.
