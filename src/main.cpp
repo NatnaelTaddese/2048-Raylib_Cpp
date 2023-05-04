@@ -90,116 +90,50 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
     }
 }
 
-// void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
-// {
-
-//     for (int i = 0; i < 4; i++)
-//     {
-//         for (int j = 0; j < 4; j++)
-//         {
-//            for (int i = 1; i < 5; i++)
-//         {
-//             if (Grid.gridFilled[totalTile[i][j].relativePosition.x - 1][totalTile[i][j].relativePosition.y] == false)
-//             {
-//                 // std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-
-//                 Grid.gridFilled[totalTile[i][j].relativePosition.x][totalTile[i][j].relativePosition.y] = false;
-
-//                 tile swap;
-//                 totalTile[i][j] = swap;
-//                 totalTile[i][j] = totalTile[i][j - 1];
-
-//                 // update grid fillment
-
-//                 // std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-
-//                 // std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
-//             }
-//         }
-
-//         }
-//     }
-// }
-
 void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
 {
     for (int i = 0; i < 4; i++)
     {
         for (int j = 1; j < 4; j++)
         {
-            // if (totalTile[i][j].numValue == 0)
-            // {
-            //     continue;
-            // }
+
             if (totalTile[i][j].isOccupied && totalTile[i][j - 1].isOccupied == false)
             {
                 std::cout << "Left Possible for " << i << j << std::endl;
-                // Grid.gridFilled[totalTile[i][j].relativePosition.x][totalTile[i][j].relativePosition.y] = false;
 
                 totalTile[i][j].absolutePosition.x -= squareSize;
                 totalTile[i][j].relativePosition.x -= 1;
 
                 totalTile[i][j - 1] = totalTile[i][j];
                 totalTile[i][j] = defaultTile;
-                // Grid.gridFilled[totalTile[i][j - 1].relativePosition.x][totalTile[i][j - 1].relativePosition.y] = true;
             }
         }
         std::cout << std::endl;
     }
 }
 
-void slideTilesLeft(std::vector<tile> &tiles)
+void slideTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
 {
-
-    for (tile &t : tiles)
+    for (int i = 0; i < 4; i++)
     {
-        for (int i = 1; i < 5; i++)
+        for (int j = 2; j >= 0; j--)
         {
-            if (Grid.gridFilled[t.relativePosition.x - 1][t.relativePosition.y] == false)
+
+            if (totalTile[i][j].isOccupied && totalTile[i][j + 1].isOccupied == false)
             {
-                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
+                std::cout << "Right Possible for " << i << j << std::endl;
 
-                Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = false;
-                t.absolutePosition.x -= squareSize;
-                t.relativePosition.x -= 1;
+                totalTile[i][j].absolutePosition.x += squareSize;
+                totalTile[i][j].relativePosition.x += 1;
 
-                // update grid fillment
-
-                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-
-                std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
+                totalTile[i][j + 1] = totalTile[i][j];
+                totalTile[i][j] = defaultTile;
             }
         }
-        Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = true;
-        // std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
+        std::cout << std::endl;
     }
 }
-void slideTilesRight(std::vector<tile> &tiles)
-{
 
-    for (tile &t : tiles)
-    {
-        for (int i = 1; i < 5; i++)
-        {
-            if (Grid.gridFilled[t.relativePosition.x + 1][t.relativePosition.y] == false)
-            {
-                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-
-                Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = false;
-                t.absolutePosition.x += squareSize;
-                t.relativePosition.x += 1;
-
-                // update grid fillment
-
-                std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-
-                std::cout << t.relativePosition.x << " , " << t.relativePosition.y << std::endl;
-            }
-        }
-        Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] = true;
-        std::cout << Grid.gridFilled[t.relativePosition.x][t.relativePosition.y] << std::endl;
-    }
-}
 void slideTilesUp(std::vector<tile> &tiles)
 {
     for (tile &t : tiles)
@@ -326,7 +260,7 @@ int main(void)
         {
             for (int i = 0; i < 4; i++)
             {
-                // slideTilesRight(totalTile);
+                slideTilesRight(totalTile);
             }
         }
         if (IsKeyPressed(KEY_UP))
