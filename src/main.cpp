@@ -140,7 +140,7 @@ void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
                 std::cout << "Left Possible for " << i << j << std::endl;
 
                 totalTile[i][j].absolutePosition.x -= squareSize;
-                totalTile[i][j].relativePosition.x -= 1;
+                // totalTile[i][j].relativePosition.x -= 1;
 
                 totalTile[i][j - 1] = totalTile[i][j];
                 totalTile[i][j] = defaultTile;
