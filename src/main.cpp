@@ -12,7 +12,14 @@
 #include <ctime>
 #include <iostream>
 
-Color TILECOLOR = (Color){238, 225, 201, 255};
+Color TILECOLOR2 = (Color){238, 228, 218, 255};
+Color TILECOLOR4 = (Color){238, 225, 201, 255};
+Color TILECOLOR8 = (Color){243, 178, 122, 255};
+Color TILECOLOR16 = (Color){246, 150, 100, 255};
+Color TILECOLOR32 = (Color){247, 124, 95, 255};
+Color TILECOLOR64 = (Color){247, 95, 59, 255};
+Color TILECOLOR128 = (Color){237, 208, 115, 255};
+Color TILECOLOR256 = (Color){237, 204, 98, 255};
 
 Color NUMCOLOR = (Color){119, 110, 101, 255};
 
@@ -29,6 +36,8 @@ const int lineWidth = 10;
 const int tileSize = squareSize - lineWidth;
 int fixFontPosition;
 int fixFontSize;
+bool moveValid = false;
+Color tileColor;
 
 struct
 {
@@ -71,6 +80,16 @@ void generateTile()
     // append to the total tiles vector
     totalTile[y][x] = tiles;
     std::cout << "Generated: " << y << x << " " << std::endl;
+    moveValid = false;
+
+    // int animation = 1;
+    // while (animation < 10)
+
+    // {
+
+    //     DrawRectangle(20, 20, animation, animation, RED);
+
+    // }
 }
 
 // draw all tiles
@@ -92,8 +111,16 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                                                                : totalTile[i][j].numValue < 600   ? 6
                                                                : totalTile[i][j].numValue < 1200  ? 15
                                                                                                   : 20;
+                tileColor = totalTile[i][j].numValue == 2 ? TILECOLOR2 : totalTile[i][j].numValue == 4 ? TILECOLOR4
+                                                                     : totalTile[i][j].numValue == 8   ? TILECOLOR8
+                                                                     : totalTile[i][j].numValue == 16  ? TILECOLOR16
+                                                                     : totalTile[i][j].numValue == 32  ? TILECOLOR32
+                                                                     : totalTile[i][j].numValue == 64  ? TILECOLOR64
+                                                                     : totalTile[i][j].numValue == 128 ? TILECOLOR128
+                                                                     : totalTile[i][j].numValue == 256 ? TILECOLOR256
+                                                                                                       : TILECOLOR128;
 
-                DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, TILECOLOR);
+                DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
                 DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, NUMCOLOR);
             }
         }
@@ -116,6 +143,8 @@ void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 totalTile[i][j - 1] = totalTile[i][j];
                 totalTile[i][j] = defaultTile;
+
+                moveValid = true;
             }
         }
         std::cout << std::endl;
@@ -137,6 +166,7 @@ void slideTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 totalTile[i][j + 1] = totalTile[i][j];
                 totalTile[i][j] = defaultTile;
+                moveValid = true;
             }
         }
         std::cout << std::endl;
@@ -158,6 +188,7 @@ void slideTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 totalTile[j - 1][i] = totalTile[j][i];
                 totalTile[j][i] = defaultTile;
+                moveValid = true;
             }
         }
         std::cout << std::endl;
@@ -179,6 +210,7 @@ void slideTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 totalTile[j + 1][i] = totalTile[j][i];
                 totalTile[j][i] = defaultTile;
+                moveValid = true;
             }
         }
         std::cout << std::endl;
@@ -306,9 +338,9 @@ void initGame()
     }
     generateTile();
     generateTile();
-    generateTile();
-    generateTile();
-    generateTile();
+    // generateTile();
+    // generateTile();
+    // generateTile();
 }
 
 void drawHeader()
@@ -328,6 +360,13 @@ int main(void)
 
     while (!WindowShouldClose())
     {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        // draw header
+        drawHeader();
+        // draw board
+        drawBoard(screenOffset, squareSize);
+
         if (IsKeyPressed(KEY_LEFT))
         {
             for (int i = 0; i < 4; i++)
@@ -335,6 +374,10 @@ int main(void)
                 slideTilesLeft(totalTile);
             }
             sumTilesleft(totalTile);
+            if (moveValid)
+            {
+                generateTile();
+            }
         }
         if (IsKeyPressed(KEY_RIGHT))
         {
@@ -343,6 +386,10 @@ int main(void)
                 slideTilesRight(totalTile);
             }
             sumTilesRight(totalTile);
+            if (moveValid)
+            {
+                generateTile();
+            }
         }
         if (IsKeyPressed(KEY_UP))
         {
@@ -351,6 +398,10 @@ int main(void)
                 slideTilesUp(totalTile);
             }
             sumTilesUp(totalTile);
+            if (moveValid)
+            {
+                generateTile();
+            }
         }
         if (IsKeyPressed(KEY_DOWN))
         {
@@ -359,22 +410,16 @@ int main(void)
                 slideTilesDown(totalTile);
             }
             sumTilesDown(totalTile);
+            if (moveValid)
+            {
+                generateTile();
+            }
         }
         // for debugging
         if (IsKeyPressed(KEY_G))
         {
             generateTile();
         }
-
-        BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        // draw header
-        drawHeader();
-
-        // draw board
-        drawBoard(screenOffset, squareSize);
 
         // // tile
         DrawTiles(totalTile);
