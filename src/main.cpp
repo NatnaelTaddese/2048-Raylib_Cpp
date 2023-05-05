@@ -19,12 +19,12 @@ Color TILECOLOR16 = (Color){246, 150, 100, 255};
 Color TILECOLOR32 = (Color){247, 124, 95, 255};
 Color TILECOLOR64 = (Color){247, 95, 59, 255};
 Color TILECOLOR128 = (Color){237, 208, 115, 255};
-Color TILECOLOR256 = (Color){237, 204, 98, 255};
+Color TILECOLOR256 = (Color){247, 180, 98, 255};
 
-Color NUMCOLOR = (Color){119, 110, 101, 255};
+Color NUMCOLOR = (Color){249, 246, 242, 255};
+Color NUMCOLORDARK = (Color){119, 110, 101, 255};
 
 Color BGCOLOR = (Color){205, 193, 180, 255};
-
 Color GRIDCOLOR = (Color){187, 173, 160, 255};
 
 // GLOBAL VARIABLES
@@ -38,6 +38,7 @@ int fixFontPosition;
 int fixFontSize;
 bool moveValid = false;
 Color tileColor;
+Color numColor;
 
 struct
 {
@@ -120,8 +121,9 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                                                                      : totalTile[i][j].numValue == 256 ? TILECOLOR256
                                                                                                        : TILECOLOR128;
 
+                numColor = totalTile[i][j].numValue < 16 ? NUMCOLORDARK : NUMCOLOR;
                 DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, NUMCOLOR);
+                DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
             }
         }
     }
