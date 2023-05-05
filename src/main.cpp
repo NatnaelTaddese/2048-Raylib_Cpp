@@ -5,7 +5,6 @@
  ********************************************************************************************/
 
 #include "raylib.h"
-#include <vector>
 #include <array>
 #include <string>
 #include <cstdlib>
