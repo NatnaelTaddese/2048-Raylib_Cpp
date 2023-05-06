@@ -9,6 +9,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 #include <iostream>
 
 Color TILECOLOR2 = (Color){238, 228, 218, 255};
@@ -48,15 +49,20 @@ struct
 struct tile
 {
     Vector2 absolutePosition;
-    Vector2 relativePosition;
     Color tileColor;
     int numValue = 0;
     bool isOccupied = false;
+    bool isNew;
 
 } defaultTile;
 
 // vector that stores all the squareTiles
 std::array<std::array<tile, 4>, 4> totalTile;
+
+float lerp(float a, float b, float t)
+{
+    return a + (b - a) * t; // This returns a + t percent (t = 0.f is 0% and t = 1.f is 100%) of b
+}
 
 // Generate tile
 void generateTile()
@@ -70,31 +76,22 @@ void generateTile()
     } while (totalTile[y][x].isOccupied);
 
     tile tiles;
-    tiles.relativePosition.x = x;
-    tiles.relativePosition.y = y;
     tiles.absolutePosition.x = (screenOffset + lineWidth) + ((x)*squareSize);
     tiles.absolutePosition.y = (((screenOffset / 2) + 150) + lineWidth) + ((y)*squareSize);
     tiles.numValue = 2;
     tiles.isOccupied = true;
+    tiles.isNew = true;
 
     // append to the total tiles vector
     totalTile[y][x] = tiles;
-    std::cout << "Generated: " << y << x << " " << std::endl;
+    std::cout << "Generated: " << y << x << "  " << totalTile[y][x].isNew << std::endl;
     moveValid = false;
-
-    // int animation = 1;
-    // while (animation < 10)
-
-    // {
-
-    //     DrawRectangle(20, 20, animation, animation, RED);
-
-    // }
 }
 
 // draw all tiles
 inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 {
+
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 4; j++)
@@ -121,8 +118,25 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                                                                                                        : TILECOLOR128;
 
                 numColor = totalTile[i][j].numValue < 16 ? NUMCOLORDARK : NUMCOLOR;
-                DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
+
+                if (totalTile[i][j].isNew)
+                {
+                    float animTime = 0.5f;                                                                                                                    // animation time in seconds
+                    float t = fminf((GetTime()) / animTime, 1.0f);                                                                                            // get the current animation progress
+                    float scale = lerp(0.5f, 1.0f, t);                                                                                                        // interpolate the scale from 0.5 to 1                                                                                                     // interpolate the alpha from 0.2 to 1
+                    Vector2 pos = {lerp(totalTile[i][j].absolutePosition.x - 20, totalTile[i][j].absolutePosition.x, t), totalTile[i][j].absolutePosition.y}; // interpolate the position horizontally
+                    DrawRectangleRounded({pos.x, pos.y, tileSize * scale, tileSize * scale}, 0.2f, 8, tileColor);
+                    if (t >= 1.0f)
+                    {
+                        totalTile[i][j].isNew = false;
+                    }
+                }
+                else
+                {
+
+                    DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
+                    DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
+                }
             }
         }
     }
@@ -163,7 +177,6 @@ void slideTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
                 std::cout << "Right Possible for " << i << j << std::endl;
 
                 totalTile[i][j].absolutePosition.x += squareSize;
-                totalTile[i][j].relativePosition.x += 1;
 
                 totalTile[i][j + 1] = totalTile[i][j];
                 totalTile[i][j] = defaultTile;
@@ -185,7 +198,6 @@ void slideTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
                 std::cout << "Up Possible for " << j << i << std::endl;
 
                 totalTile[j][i].absolutePosition.y -= squareSize;
-                totalTile[j][i].relativePosition.y -= 1;
 
                 totalTile[j - 1][i] = totalTile[j][i];
                 totalTile[j][i] = defaultTile;
@@ -207,7 +219,6 @@ void slideTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
                 std::cout << "Up Possible for " << j << i << std::endl;
 
                 totalTile[j][i].absolutePosition.y += squareSize;
-                totalTile[j][i].relativePosition.y += 1;
 
                 totalTile[j + 1][i] = totalTile[j][i];
                 totalTile[j][i] = defaultTile;
@@ -362,11 +373,6 @@ int main(void)
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        ClearBackground(RAYWHITE);
-        // draw header
-        drawHeader();
-        // draw board
-        drawBoard(screenOffset, squareSize);
 
         if (IsKeyPressed(KEY_LEFT))
         {
@@ -422,7 +428,12 @@ int main(void)
             generateTile();
         }
 
-        // // tile
+        ClearBackground(RAYWHITE);
+        // draw header
+        drawHeader();
+        // draw board
+        drawBoard(screenOffset, squareSize);
+        // tile
         DrawTiles(totalTile);
 
         EndDrawing();
