@@ -91,7 +91,7 @@ void generateTile()
     tile tiles;
     tiles.absolutePosition.x = (screenOffset + lineWidth) + ((x)*squareSize);
     tiles.absolutePosition.y = (((screenOffset / 2) + 150) + lineWidth) + ((y)*squareSize);
-    tiles.numValue = 64;
+    tiles.numValue = 2;
     tiles.isOccupied = true;
     tiles.isNew = true;
 
@@ -117,7 +117,7 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                                                                   : totalTile[i][j].numValue < 1000 ? 30
                                                                                                     : 40;
 
-                fixFontSize = totalTile[i][j].numValue < 100 ? 0 : totalTile[i][j].numValue < 300 ? 4
+                fixFontSize = totalTile[i][j].numValue < 100 ? 0 : totalTile[i][j].numValue < 300 ? 5
                                                                : totalTile[i][j].numValue < 600   ? 6
                                                                : totalTile[i][j].numValue < 1200  ? 15
                                                                                                   : 20;
@@ -156,12 +156,6 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                     DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
                     DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
                 }
-
-                // if (eventTriggered(0.4))
-                // {
-                //     DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                //     DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
-                // }
             }
         }
     }
