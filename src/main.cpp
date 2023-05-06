@@ -36,9 +36,27 @@ const int lineWidth = 10;
 const int tileSize = squareSize - lineWidth;
 int fixFontPosition;
 int fixFontSize;
+double lastUpdateTime = 0;
 bool moveValid = false;
 Color tileColor;
 Color numColor;
+
+float lerp(float a, float b, float t)
+{
+    return a + (b - a) * t; // This returns a + t percent (t = 0.f is 0% and t = 1.f is 100%) of b
+}
+
+bool eventTriggered(double interval)
+{
+    double currentTime = GetTime();
+    if (currentTime - lastUpdateTime >= interval)
+    {
+        lastUpdateTime = currentTime;
+        return true;
+    }
+
+    return false;
+}
 
 struct
 {
@@ -59,11 +77,6 @@ struct tile
 // vector that stores all the squareTiles
 std::array<std::array<tile, 4>, 4> totalTile;
 
-float lerp(float a, float b, float t)
-{
-    return a + (b - a) * t; // This returns a + t percent (t = 0.f is 0% and t = 1.f is 100%) of b
-}
-
 // Generate tile
 void generateTile()
 {
@@ -78,7 +91,7 @@ void generateTile()
     tile tiles;
     tiles.absolutePosition.x = (screenOffset + lineWidth) + ((x)*squareSize);
     tiles.absolutePosition.y = (((screenOffset / 2) + 150) + lineWidth) + ((y)*squareSize);
-    tiles.numValue = 2;
+    tiles.numValue = 64;
     tiles.isOccupied = true;
     tiles.isNew = true;
 
@@ -104,7 +117,7 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                                                                   : totalTile[i][j].numValue < 1000 ? 30
                                                                                                     : 40;
 
-                fixFontSize = totalTile[i][j].numValue < 100 ? 0 : totalTile[i][j].numValue < 300 ? 10
+                fixFontSize = totalTile[i][j].numValue < 100 ? 0 : totalTile[i][j].numValue < 300 ? 4
                                                                : totalTile[i][j].numValue < 600   ? 6
                                                                : totalTile[i][j].numValue < 1200  ? 15
                                                                                                   : 20;
@@ -121,8 +134,15 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 if (totalTile[i][j].isNew)
                 {
+                    // double currentTime = GetTime();
+
+                    // if (currentTime - lastUpdateTime >= 0.3)
+                    // {
+                    //     lastUpdateTime = currentTime;
+                    // }
+
                     float animTime = 0.5f;                                                                                                                    // animation time in seconds
-                    float t = fminf((GetTime()) / animTime, 1.0f);                                                                                            // get the current animation progress
+                    float t = fminf(GetTime() / animTime, 1.0f);                                                                                              // get the current animation progress
                     float scale = lerp(0.5f, 1.0f, t);                                                                                                        // interpolate the scale from 0.5 to 1                                                                                                     // interpolate the alpha from 0.2 to 1
                     Vector2 pos = {lerp(totalTile[i][j].absolutePosition.x - 20, totalTile[i][j].absolutePosition.x, t), totalTile[i][j].absolutePosition.y}; // interpolate the position horizontally
                     DrawRectangleRounded({pos.x, pos.y, tileSize * scale, tileSize * scale}, 0.2f, 8, tileColor);
@@ -133,10 +153,15 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                 }
                 else
                 {
-
                     DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
                     DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
                 }
+
+                // if (eventTriggered(0.4))
+                // {
+                //     DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
+                //     DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
+                // }
             }
         }
     }
