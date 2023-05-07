@@ -99,6 +99,7 @@ void generateTile()
     totalTile[y][x] = tiles;
     std::cout << "Generated: " << y << x << "  " << totalTile[y][x].isNew << std::endl;
     moveValid = false;
+    lastUpdateTime = 0;
 }
 
 // draw all tiles
@@ -132,7 +133,7 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 numColor = totalTile[i][j].numValue < 16 ? NUMCOLORDARK : NUMCOLOR;
 
-                if (totalTile[i][j].isNew)
+                if (totalTile[i][j].isNew || true)
                 {
                     // double currentTime = GetTime();
 
@@ -142,28 +143,30 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                     // }
 
                     // lastUpdateTime = 0;
-                    // if (lastUpdateTime < 10)
-                    // {
-                    //     DrawRectangle(totalTile[i][j].absolutePosition.x * GetTime(), totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                    //     lastUpdateTime++;
-                    // }
+                    if (lastUpdateTime < 100 && totalTile[i][j].isNew)
+                    {
+                        DrawRectangle(totalTile[i][j].absolutePosition.x * GetTime(), totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
+                        lastUpdateTime++;
+                    }
 
                     // tmrw me: try adding the *GetTime() function to the tile size to animate the tile
 
-                    float animTime = 0.5f;                                                                                                                    // animation time in seconds
-                    float t = fminf(GetTime() / animTime, 1.0f);                                                                                              // get the current animation progress
-                    float scale = lerp(0.5f, 1.0f, t);                                                                                                        // interpolate the scale from 0.5 to 1                                                                                                     // interpolate the alpha from 0.2 to 1
-                    Vector2 pos = {lerp(totalTile[i][j].absolutePosition.x - 20, totalTile[i][j].absolutePosition.x, t), totalTile[i][j].absolutePosition.y}; // interpolate the position horizontally
-                    DrawRectangleRounded({pos.x, pos.y, tileSize * scale, tileSize * scale}, 0.2f, 8, tileColor);
-                    if (t >= 1.0f)
+                    // float animTime = 0.5f;                                                                                                                    // animation time in seconds
+                    // float t = fminf(GetTime() / animTime, 1.0f);                                                                                              // get the current animation progress
+                    // float scale = lerp(0.5f, 1.0f, t);                                                                                                        // interpolate the scale from 0.5 to 1                                                                                                     // interpolate the alpha from 0.2 to 1
+                    // Vector2 pos = {lerp(totalTile[i][j].absolutePosition.x - 20, totalTile[i][j].absolutePosition.x, t), totalTile[i][j].absolutePosition.y}; // interpolate the position horizontally
+                    // DrawRectangleRounded({pos.x, pos.y, tileSize * scale, tileSize * scale}, 0.2f, 8, tileColor);
+                    // if (t >= 1.0f)
+                    // {
+                    //     totalTile[i][j].isNew = false;
+                    // }
+
+                    else
                     {
+                        DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
+                        DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
                         totalTile[i][j].isNew = false;
                     }
-                }
-                else
-                {
-                    DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                    DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
                 }
             }
         }
