@@ -141,6 +141,15 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                     //     lastUpdateTime = currentTime;
                     // }
 
+                    // lastUpdateTime = 0;
+                    // if (lastUpdateTime < 10)
+                    // {
+                    //     DrawRectangle(totalTile[i][j].absolutePosition.x * GetTime(), totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
+                    //     lastUpdateTime++;
+                    // }
+
+                    // tmrw me: try adding the *GetTime() function to the tile size to animate the tile
+
                     float animTime = 0.5f;                                                                                                                    // animation time in seconds
                     float t = fminf(GetTime() / animTime, 1.0f);                                                                                              // get the current animation progress
                     float scale = lerp(0.5f, 1.0f, t);                                                                                                        // interpolate the scale from 0.5 to 1                                                                                                     // interpolate the alpha from 0.2 to 1
