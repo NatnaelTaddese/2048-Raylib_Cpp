@@ -1,7 +1,9 @@
 ## currently unfinished
 
 Questions you might ask:
+
 "But Nati, you didn't use OOP, why not write the whole thing in C?"
+
 Chillax, I'm working with what I know.
 
 # Get Raylib
