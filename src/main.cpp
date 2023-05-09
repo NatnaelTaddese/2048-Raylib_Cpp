@@ -143,11 +143,11 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                     // }
 
                     // lastUpdateTime = 0;
-                    if (lastUpdateTime < 100 && totalTile[i][j].isNew)
-                    {
-                        DrawRectangle(totalTile[i][j].absolutePosition.x * GetTime(), totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                        lastUpdateTime++;
-                    }
+                    // if (lastUpdateTime < 100 && totalTile[i][j].isNew)
+                    // {
+                    //     DrawRectangle(totalTile[i][j].absolutePosition.x * GetTime(), totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
+                    //     lastUpdateTime++;
+                    // }
 
                     // tmrw me: try adding the *GetTime() function to the tile size to animate the tile
 
@@ -161,12 +161,12 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                     //     totalTile[i][j].isNew = false;
                     // }
 
-                    else
-                    {
-                        DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                        DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
-                        totalTile[i][j].isNew = false;
-                    }
+                    // else
+                    // {
+                    DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
+                    DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
+                    totalTile[i][j].isNew = false;
+                    // }
                 }
             }
         }
