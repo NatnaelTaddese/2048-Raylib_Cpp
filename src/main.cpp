@@ -116,6 +116,37 @@ void generateTile()
     lastUpdateTime = 0;
 }
 
+bool is_game_over(std::array<std::array<tile, 4>, 4> &totalTile)
+{
+    // Check if there are any empty tiles
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (totalTile[i][j].numValue == 0)
+            {
+                return false;
+            }
+        }
+    }
+
+    // Check if there are any adjacent tiles with the same value
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if ((i < 3 && totalTile[i][j].numValue == totalTile[i + 1][j].numValue) ||
+                (j < 3 && totalTile[i][j].numValue == totalTile[i][j + 1].numValue))
+            {
+                return false;
+            }
+        }
+    }
+
+    // No moves available, game is over
+    return true;
+}
+
 // draw all tiles
 inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 {
@@ -180,6 +211,7 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 
 void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
 {
+
     for (int i = 0; i < 4; i++)
     {
         for (int j = 1; j < 4; j++)
@@ -376,9 +408,6 @@ void drawBoard(int screenOffset, int squareSize)
 void initGame()
 {
     // initializing defalut values before running game
-    InitWindow(screenWidth, screenHeight, "2048");
-
-    SetTargetFPS(60);
 
     currentScore = 0;
     // fill the array with default tile
@@ -405,80 +434,110 @@ void drawHeader()
     DrawRectangle(screenOffset + lineWidth + 3 * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize / 2, BROWN);
     DrawText("Score", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2, 20, LIGHTGRAY);
     DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + (3 * squareSize), (screenOffset / 2) + 20, 20, LIGHTGRAY);
+
+    DrawRectangle(screenOffset + lineWidth + 3 * squareSize, ((screenOffset / 2)) + (tileSize / 2), tileSize, tileSize / 2, BROWN);
+    DrawText("HighScore", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2 + (tileSize / 2) + lineWidth / 2, 18, LIGHTGRAY);
+    // DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + (3 * squareSize), (screenOffset / 2) + 20, 20, LIGHTGRAY);
 }
 
 int main(void)
 {
+    InitWindow(screenWidth, screenHeight, "2048");
+
+    SetTargetFPS(60);
     initGame();
     // Font gameFont = LoadFont("QuinqueFive.ttf");
 
     while (!WindowShouldClose())
     {
-        BeginDrawing();
 
-        if (IsKeyPressed(KEY_LEFT))
+        if (is_game_over(totalTile))
         {
-            for (int i = 0; i < 4; i++)
+            BeginDrawing();
+            drawHeader();
+            DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BGCOLOR);
+            DrawText("GAMEOVER", screenOffset + 60, ((screenOffset / 2) + 150) + (squareSize), 68, RED);
+
+            if (IsKeyPressed(KEY_N))
             {
-                slideTilesLeft(totalTile);
+                initGame();
             }
-            sumTilesleft(totalTile);
-            if (moveValid)
-            {
-                generateTile();
-            }
-        }
-        if (IsKeyPressed(KEY_RIGHT))
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                slideTilesRight(totalTile);
-            }
-            sumTilesRight(totalTile);
-            if (moveValid)
-            {
-                generateTile();
-            }
-        }
-        if (IsKeyPressed(KEY_UP))
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                slideTilesUp(totalTile);
-            }
-            sumTilesUp(totalTile);
-            if (moveValid)
-            {
-                generateTile();
-            }
-        }
-        if (IsKeyPressed(KEY_DOWN))
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                slideTilesDown(totalTile);
-            }
-            sumTilesDown(totalTile);
-            if (moveValid)
-            {
-                generateTile();
-            }
-        }
-        // for debugging
-        if (IsKeyPressed(KEY_G))
-        {
-            generateTile();
+
+            EndDrawing();
         }
 
-        ClearBackground(RAYWHITE);
-        // draw header
-        drawHeader();
-        // draw board
-        drawBoard(screenOffset, squareSize);
-        // tile
-        DrawTiles(totalTile);
+        else
+        {
+            BeginDrawing();
 
-        EndDrawing();
+            if (IsKeyPressed(KEY_LEFT))
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    slideTilesLeft(totalTile);
+                }
+                sumTilesleft(totalTile);
+                if (moveValid)
+                {
+                    generateTile();
+                }
+            }
+            if (IsKeyPressed(KEY_RIGHT))
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    slideTilesRight(totalTile);
+                }
+                sumTilesRight(totalTile);
+                if (moveValid)
+                {
+                    generateTile();
+                }
+            }
+            if (IsKeyPressed(KEY_UP))
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    slideTilesUp(totalTile);
+                }
+                sumTilesUp(totalTile);
+                if (moveValid)
+                {
+                    generateTile();
+                }
+            }
+            if (IsKeyPressed(KEY_DOWN))
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    slideTilesDown(totalTile);
+                }
+                sumTilesDown(totalTile);
+                if (moveValid)
+                {
+                    generateTile();
+                }
+            }
+            // for debugging
+            if (IsKeyPressed(KEY_G))
+            {
+                generateTile();
+            }
+            if (IsKeyPressed(KEY_N))
+            {
+                initGame();
+            }
+
+            ClearBackground(RAYWHITE);
+            // draw header
+            drawHeader();
+            // draw board
+            drawBoard(screenOffset, squareSize);
+            // tile
+            DrawTiles(totalTile);
+
+            EndDrawing();
+        }
     }
 
     CloseWindow();
