@@ -36,6 +36,7 @@ const int lineWidth = 10;
 const int tileSize = squareSize - lineWidth;
 int fixFontPosition;
 int fixFontSize;
+int currentScore;
 double lastUpdateTime = 0;
 bool moveValid = false;
 Color tileColor;
@@ -80,18 +81,19 @@ std::array<std::array<tile, 4>, 4> totalTile;
 // Generate tile
 void generateTile()
 {
-    int x, y;
+    int x, y, r_num;
 
     do
     {
         x = rand() % 4;
         y = rand() % 4;
+        r_num = (rand() % 2) + 1;
     } while (totalTile[y][x].isOccupied);
 
     tile tiles;
     tiles.absolutePosition.x = (screenOffset + lineWidth) + ((x)*squareSize);
     tiles.absolutePosition.y = (((screenOffset / 2) + 150) + lineWidth) + ((y)*squareSize);
-    tiles.numValue = 2;
+    tiles.numValue = 2 * r_num;
     tiles.isOccupied = true;
     tiles.isNew = true;
 
@@ -276,6 +278,7 @@ void sumTilesleft(std::array<std::array<tile, 4>, 4> &totalTile)
                 totalTile[i][j - 1].numValue *= 2;
 
                 totalTile[i][j] = defaultTile;
+                currentScore += 2;
             }
         }
         std::cout << std::endl;
@@ -297,6 +300,7 @@ void sumTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
                 totalTile[i][j + 1].numValue *= 2;
 
                 totalTile[i][j] = defaultTile;
+                currentScore += 2;
             }
         }
         std::cout << std::endl;
@@ -317,6 +321,7 @@ void sumTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 totalTile[j - 1][i].numValue *= 2;
                 totalTile[j][i] = defaultTile;
+                currentScore += 2;
             }
         }
         std::cout << std::endl;
@@ -337,6 +342,7 @@ void sumTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 totalTile[j + 1][i].numValue *= 2;
                 totalTile[j][i] = defaultTile;
+                currentScore += 2;
             }
         }
         std::cout << std::endl;
@@ -371,6 +377,7 @@ void initGame()
 
     SetTargetFPS(60);
 
+    currentScore = 0;
     // fill the array with default tile
     for (int i = 0; i < 4; i++)
     {
@@ -394,6 +401,7 @@ void drawHeader()
     // score board
     DrawRectangle(screenOffset + lineWidth + 3 * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize, BROWN);
     DrawText("Score", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2, 20, LIGHTGRAY);
+    DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + (3 * squareSize), (screenOffset / 2) + 20, 20, LIGHTGRAY);
 }
 
 int main(void)
