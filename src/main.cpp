@@ -47,6 +47,16 @@ float lerp(float a, float b, float t)
     return a + (b - a) * t; // This returns a + t percent (t = 0.f is 0% and t = 1.f is 100%) of b
 }
 
+Vector2 Lerp(const Vector2 &v1, const Vector2 &v2, float t)
+{
+    float x = v1.x + (v2.x - v1.x) * t;
+    float y = v1.y + (v2.y - v1.y) * t;
+    Vector2 lerped;
+    lerped.x = x;
+    lerped.y = y;
+    return lerped;
+}
+
 bool eventTriggered(double interval)
 {
     double currentTime = GetTime();
@@ -137,40 +147,31 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 
                 numColor = totalTile[i][j].numValue < 16 ? NUMCOLORDARK : NUMCOLOR;
 
-                if (totalTile[i][j].isNew || true)
+                if (totalTile[i][j].isNew)
                 {
-                    // double currentTime = GetTime();
+                    totalTile[i][j].tileAnimationProgress += 0.05f;
 
-                    // if (currentTime - lastUpdateTime >= 0.3)
-                    // {
-                    //     lastUpdateTime = currentTime;
-                    // }
+                    // Calculate current tile position using Lerp function
+                    Vector2 currentTilePos = Lerp(totalTile[i][j].absolutePosition,
+                                                  {(screenOffset + lineWidth) + ((j)*squareSize),
+                                                   (((screenOffset / 2) + 150) + lineWidth) + ((i)*squareSize)},
+                                                  totalTile[i][j].tileAnimationProgress);
 
-                    // lastUpdateTime = 0;
-                    // if (lastUpdateTime < 100 && totalTile[i][j].isNew)
-                    // {
-                    //     DrawRectangle(totalTile[i][j].absolutePosition.x * GetTime(), totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                    //     lastUpdateTime++;
-                    // }
+                    // Draw tile at current position
+                    DrawRectangleV(currentTilePos, (Vector2){tileSize * totalTile[i][j].tileAnimationProgress, tileSize}, tileColor);
 
-                    // tmrw me: try adding the *GetTime() function to the tile size to animate the tile
+                    // If tile animation is complete, set isNew flag to false
+                    if (totalTile[i][j].tileAnimationProgress >= 1.0f)
+                    {
+                        totalTile[i][j].isNew = false;
+                    }
+                }
 
-                    // float animTime = 0.5f;                                                                                                                    // animation time in seconds
-                    // float t = fminf(GetTime() / animTime, 1.0f);                                                                                              // get the current animation progress
-                    // float scale = lerp(0.5f, 1.0f, t);                                                                                                        // interpolate the scale from 0.5 to 1                                                                                                     // interpolate the alpha from 0.2 to 1
-                    // Vector2 pos = {lerp(totalTile[i][j].absolutePosition.x - 20, totalTile[i][j].absolutePosition.x, t), totalTile[i][j].absolutePosition.y}; // interpolate the position horizontally
-                    // DrawRectangleRounded({pos.x, pos.y, tileSize * scale, tileSize * scale}, 0.2f, 8, tileColor);
-                    // if (t >= 1.0f)
-                    // {
-                    //     totalTile[i][j].isNew = false;
-                    // }
-
-                    // else
-                    // {
+                else
+                {
                     DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
                     DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
                     totalTile[i][j].isNew = false;
-                    // }
                 }
             }
         }
