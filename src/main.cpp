@@ -72,6 +72,7 @@ struct tile
     int numValue = 0;
     bool isOccupied = false;
     bool isNew;
+    float tileAnimationProgress;
 
 } defaultTile;
 
@@ -96,6 +97,7 @@ void generateTile()
     tiles.numValue = 2 * r_num;
     tiles.isOccupied = true;
     tiles.isNew = true;
+    tiles.tileAnimationProgress = 0;
 
     // append to the total tiles vector
     totalTile[y][x] = tiles;
@@ -396,10 +398,10 @@ void initGame()
 void drawHeader()
 {
     // header text defaults
-    DrawText("2048", screenOffset, screenOffset / 2, 80, LIGHTGRAY);
+    DrawText("2048", screenOffset, screenOffset / 2 - lineWidth, 62, LIGHTGRAY);
 
     // score board
-    DrawRectangle(screenOffset + lineWidth + 3 * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize, BROWN);
+    DrawRectangle(screenOffset + lineWidth + 3 * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize / 2, BROWN);
     DrawText("Score", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2, 20, LIGHTGRAY);
     DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + (3 * squareSize), (screenOffset / 2) + 20, 20, LIGHTGRAY);
 }
