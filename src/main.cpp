@@ -81,6 +81,7 @@ struct tile
     int numValue = 0;
     bool isOccupied = false;
     bool isNew;
+    bool isSliding;
     float tileAnimationProgress;
 
 } defaultTile;
@@ -161,6 +162,15 @@ void checkScore()
 {
     std::ifstream fin("../bin/h_score.bin", std::ios::binary);
 
+    if (!fin.is_open())
+    {
+        std::ofstream fout("../bin/h_score.bin", std::ios::binary);
+        fout.write(reinterpret_cast<char *>(&currentScore), sizeof(currentScore));
+
+        // Close binary file
+        fout.close();
+    }
+
     // Read number from binary file
     int h_score;
     fin.read(reinterpret_cast<char *>(&h_score), sizeof(h_score));
@@ -224,6 +234,26 @@ inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
                     }
                 }
 
+                else if (totalTile[i][j].isSliding)
+                {
+                    totalTile[i][j].tileAnimationProgress += 0.05f;
+
+                    // Calculate current tile position using Lerp function
+                    Vector2 currentTilePos = Lerp(totalTile[i][j].absolutePosition,
+                                                  {(screenOffset + lineWidth) + ((j)*squareSize),
+                                                   (((screenOffset / 2) + 150) + lineWidth) + ((i)*squareSize)},
+                                                  totalTile[i][j].tileAnimationProgress);
+
+                    // Draw tile at current position
+                    DrawRectangleV(currentTilePos, (Vector2){tileSize * totalTile[i][j].tileAnimationProgress, tileSize}, tileColor);
+
+                    // If tile animation is complete, set isNew flag to false
+                    if (totalTile[i][j].tileAnimationProgress >= 1.0f)
+                    {
+                        totalTile[i][j].isSliding = false;
+                    }
+                }
+
                 else
                 {
                     DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
@@ -254,6 +284,7 @@ void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
                 totalTile[i][j] = defaultTile;
 
                 moveValid = true;
+                totalTile[i][j - 1].isSliding = true;
             }
         }
         std::cout << std::endl;
@@ -335,17 +366,18 @@ void sumTilesleft(std::array<std::array<tile, 4>, 4> &totalTile)
             if ((totalTile[i][j].isOccupied && totalTile[i][j - 1].isOccupied) && (totalTile[i][j].numValue == totalTile[i][j - 1].numValue))
             {
                 std::cout << "Left Add Possible for " << i << j << std::endl;
+                currentScore += totalTile[i][j - 1].numValue;
 
                 totalTile[i][j - 1].numValue *= 2;
 
                 totalTile[i][j] = defaultTile;
-                currentScore += 2;
             }
         }
         std::cout << std::endl;
     }
     slideTilesLeft(totalTile);
 }
+
 void sumTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
 {
 
@@ -357,11 +389,11 @@ void sumTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
             if ((totalTile[i][j].isOccupied && totalTile[i][j + 1].isOccupied) && (totalTile[i][j].numValue == totalTile[i][j + 1].numValue))
             {
                 std::cout << "Right Add Possible for " << i << j << std::endl;
+                currentScore += totalTile[i][j + 1].numValue;
 
                 totalTile[i][j + 1].numValue *= 2;
 
                 totalTile[i][j] = defaultTile;
-                currentScore += 2;
             }
         }
         std::cout << std::endl;
@@ -379,10 +411,10 @@ void sumTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
             if ((totalTile[j][i].isOccupied && totalTile[j - 1][i].isOccupied) && (totalTile[j][i].numValue == totalTile[j - 1][i].numValue))
             {
                 std::cout << "Up Add Possible for " << j << i << std::endl;
+                currentScore += totalTile[j - 1][i].numValue;
 
                 totalTile[j - 1][i].numValue *= 2;
                 totalTile[j][i] = defaultTile;
-                currentScore += 2;
             }
         }
         std::cout << std::endl;
@@ -400,10 +432,10 @@ void sumTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
             if ((totalTile[j][i].isOccupied && totalTile[j + 1][i].isOccupied) && (totalTile[j][i].numValue == totalTile[j + 1][i].numValue))
             {
                 std::cout << "Down Possible for " << j << i << std::endl;
+                currentScore += totalTile[j + 1][i].numValue;
 
                 totalTile[j + 1][i].numValue *= 2;
                 totalTile[j][i] = defaultTile;
-                currentScore += 2;
             }
         }
         std::cout << std::endl;
@@ -472,6 +504,7 @@ int main(void)
 
     SetTargetFPS(60);
     initGame();
+    checkScore();
     // Font gameFont = LoadFont("QuinqueFive.ttf");
 
     while (!WindowShouldClose())
