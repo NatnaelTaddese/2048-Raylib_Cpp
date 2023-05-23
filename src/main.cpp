@@ -8,7 +8,7 @@
 #include <array>
 #include <string>
 #include <cmath>
-#include <iostream>
+// #include <iostream>
 #include <fstream>
 
 Color TILECOLOR2 = (Color){238, 228, 218, 255};
@@ -103,7 +103,7 @@ void generateTile()
 
     // append to the total tiles vector
     totalTile[y][x] = tiles;
-    std::cout << "Generated: " << y << x << "  " << totalTile[y][x].isNew << std::endl;
+    // std::cout << "Generated: " << y << x << "  " << totalTile[y][x].isNew << std::endl;
     moveValid = false;
     lastUpdateTime = 0;
 }
@@ -167,7 +167,7 @@ void readScore()
     fin.read(reinterpret_cast<char *>(&h_score), sizeof(h_score));
     highScore = h_score;
 
-    std::cout << h_score << std::endl;
+    // std::cout << h_score << std::endl;
 
     // Close binary file
     fin.close();
@@ -177,7 +177,7 @@ void readScore()
         updateHighScore();
     }
 
-    std::cout << "file read successfuly" << std::endl;
+    // std::cout << "file read successfuly" << std::endl;
 }
 
 void checkScore()
