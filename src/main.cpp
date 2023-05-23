@@ -147,6 +147,32 @@ bool is_game_over(std::array<std::array<tile, 4>, 4> &totalTile)
     return true;
 }
 
+void updateHighScore()
+{
+    std::ofstream fout("../bin/h_score.bin", std::ios::binary);
+
+    fout.write(reinterpret_cast<char *>(&currentScore), sizeof(currentScore));
+
+    // Close binary file
+    fout.close();
+}
+
+void checkScore()
+{
+    std::ifstream fin("../bin/h_score.bin", std::ios::binary);
+
+    // Read number from binary file
+    int h_score;
+    fin.read(reinterpret_cast<char *>(&h_score), sizeof(h_score));
+    // Close binary file
+    fin.close();
+
+    if (h_score < currentScore)
+    {
+        updateHighScore();
+    }
+}
+
 // draw all tiles
 inline void DrawTiles(std::array<std::array<tile, 4>, 4> &totalTile)
 {
