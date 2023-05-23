@@ -57,17 +57,17 @@ Vector2 Lerp(const Vector2 &v1, const Vector2 &v2, float t)
     return lerped;
 }
 
-bool eventTriggered(double interval)
-{
-    double currentTime = GetTime();
-    if (currentTime - lastUpdateTime >= interval)
-    {
-        lastUpdateTime = currentTime;
-        return true;
-    }
+// bool eventTriggered(double interval)
+// {
+//     double currentTime = GetTime();
+//     if (currentTime - lastUpdateTime >= interval)
+//     {
+//         lastUpdateTime = currentTime;
+//         return true;
+//     }
 
-    return false;
-}
+//     return false;
+// }
 
 struct
 {
@@ -88,6 +88,7 @@ struct tile
 
 // vector that stores all the squareTiles
 std::array<std::array<tile, 4>, 4> totalTile;
+std::array<std::array<tile, 4>, 4> last_move;
 
 // Generate tile
 void generateTile()
@@ -472,11 +473,13 @@ int main(void)
 
             if (IsKeyPressed(KEY_LEFT))
             {
+                last_move = totalTile;
                 for (int i = 0; i < 4; i++)
                 {
                     slideTilesLeft(totalTile);
                 }
                 sumTilesleft(totalTile);
+
                 if (moveValid)
                 {
                     generateTile();
@@ -484,11 +487,13 @@ int main(void)
             }
             if (IsKeyPressed(KEY_RIGHT))
             {
+                last_move = totalTile;
                 for (int i = 0; i < 4; i++)
                 {
                     slideTilesRight(totalTile);
                 }
                 sumTilesRight(totalTile);
+
                 if (moveValid)
                 {
                     generateTile();
@@ -496,6 +501,7 @@ int main(void)
             }
             if (IsKeyPressed(KEY_UP))
             {
+                last_move = totalTile;
                 for (int i = 0; i < 4; i++)
                 {
                     slideTilesUp(totalTile);
@@ -508,6 +514,7 @@ int main(void)
             }
             if (IsKeyPressed(KEY_DOWN))
             {
+                last_move = totalTile;
                 for (int i = 0; i < 4; i++)
                 {
                     slideTilesDown(totalTile);
@@ -526,6 +533,10 @@ int main(void)
             if (IsKeyPressed(KEY_N))
             {
                 initGame();
+            }
+            if (IsKeyPressed(KEY_U))
+            {
+                totalTile = last_move;
             }
 
             ClearBackground(RAYWHITE);
