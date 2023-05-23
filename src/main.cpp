@@ -24,6 +24,7 @@ Color NUMCOLOR = (Color){249, 246, 242, 255};
 Color NUMCOLORDARK = (Color){119, 110, 101, 255};
 
 Color BGCOLOR = (Color){205, 193, 180, 255};
+Color BGCOLOR_SEMI_TRANS = (Color){205, 193, 180, 70};
 Color GRIDCOLOR = (Color){187, 173, 160, 255};
 
 // GLOBAL VARIABLES
@@ -36,8 +37,10 @@ const int tileSize = squareSize - lineWidth;
 int fixFontPosition;
 int fixFontSize;
 int currentScore;
+int highScore;
 double lastUpdateTime = 0;
 bool moveValid = false;
+bool splashScreen = true;
 Color tileColor;
 Color numColor;
 
@@ -55,18 +58,6 @@ Vector2 Lerp(const Vector2 &v1, const Vector2 &v2, float t)
     lerped.y = y;
     return lerped;
 }
-
-// bool eventTriggered(double interval)
-// {
-//     double currentTime = GetTime();
-//     if (currentTime - lastUpdateTime >= interval)
-//     {
-//         lastUpdateTime = currentTime;
-//         return true;
-//     }
-
-//     return false;
-// }
 
 struct
 {
@@ -158,7 +149,7 @@ void updateHighScore()
     fout.close();
 }
 
-void checkScore()
+void readScore()
 {
     std::ifstream fin("../bin/h_score.bin", std::ios::binary);
 
@@ -174,12 +165,27 @@ void checkScore()
     // Read number from binary file
     int h_score;
     fin.read(reinterpret_cast<char *>(&h_score), sizeof(h_score));
+    highScore = h_score;
+
+    std::cout << h_score << std::endl;
+
     // Close binary file
     fin.close();
 
-    if (h_score < currentScore)
+    if (highScore < currentScore)
     {
         updateHighScore();
+    }
+
+    std::cout << "file read successfuly" << std::endl;
+}
+
+void checkScore()
+{
+
+    if (highScore < currentScore)
+    {
+        readScore();
     }
 }
 
@@ -275,10 +281,8 @@ void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
 
             if (totalTile[i][j].isOccupied && totalTile[i][j - 1].isOccupied == false)
             {
-                std::cout << "Left Possible for " << i << j << std::endl;
 
                 totalTile[i][j].absolutePosition.x -= squareSize;
-                // totalTile[i][j].relativePosition.x -= 1;
 
                 totalTile[i][j - 1] = totalTile[i][j];
                 totalTile[i][j] = defaultTile;
@@ -287,7 +291,6 @@ void slideTilesLeft(std::array<std::array<tile, 4>, 4> &totalTile)
                 totalTile[i][j - 1].isSliding = true;
             }
         }
-        std::cout << std::endl;
     }
 }
 void slideTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
@@ -299,7 +302,6 @@ void slideTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
 
             if (totalTile[i][j].isOccupied && totalTile[i][j + 1].isOccupied == false)
             {
-                std::cout << "Right Possible for " << i << j << std::endl;
 
                 totalTile[i][j].absolutePosition.x += squareSize;
 
@@ -308,7 +310,6 @@ void slideTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
                 moveValid = true;
             }
         }
-        std::cout << std::endl;
     }
 }
 void slideTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
@@ -320,7 +321,6 @@ void slideTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
 
             if (totalTile[j][i].isOccupied && totalTile[j - 1][i].isOccupied == false)
             {
-                std::cout << "Up Possible for " << j << i << std::endl;
 
                 totalTile[j][i].absolutePosition.y -= squareSize;
 
@@ -329,7 +329,6 @@ void slideTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
                 moveValid = true;
             }
         }
-        std::cout << std::endl;
     }
 }
 void slideTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
@@ -341,7 +340,6 @@ void slideTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
 
             if (totalTile[j][i].isOccupied && totalTile[j + 1][i].isOccupied == false)
             {
-                std::cout << "Up Possible for " << j << i << std::endl;
 
                 totalTile[j][i].absolutePosition.y += squareSize;
 
@@ -350,7 +348,6 @@ void slideTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
                 moveValid = true;
             }
         }
-        std::cout << std::endl;
     }
 }
 
@@ -365,7 +362,6 @@ void sumTilesleft(std::array<std::array<tile, 4>, 4> &totalTile)
 
             if ((totalTile[i][j].isOccupied && totalTile[i][j - 1].isOccupied) && (totalTile[i][j].numValue == totalTile[i][j - 1].numValue))
             {
-                std::cout << "Left Add Possible for " << i << j << std::endl;
                 currentScore += totalTile[i][j - 1].numValue;
 
                 totalTile[i][j - 1].numValue *= 2;
@@ -373,11 +369,9 @@ void sumTilesleft(std::array<std::array<tile, 4>, 4> &totalTile)
                 totalTile[i][j] = defaultTile;
             }
         }
-        std::cout << std::endl;
     }
     slideTilesLeft(totalTile);
 }
-
 void sumTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
 {
 
@@ -388,7 +382,6 @@ void sumTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
 
             if ((totalTile[i][j].isOccupied && totalTile[i][j + 1].isOccupied) && (totalTile[i][j].numValue == totalTile[i][j + 1].numValue))
             {
-                std::cout << "Right Add Possible for " << i << j << std::endl;
                 currentScore += totalTile[i][j + 1].numValue;
 
                 totalTile[i][j + 1].numValue *= 2;
@@ -396,7 +389,6 @@ void sumTilesRight(std::array<std::array<tile, 4>, 4> &totalTile)
                 totalTile[i][j] = defaultTile;
             }
         }
-        std::cout << std::endl;
     }
     slideTilesRight(totalTile);
 }
@@ -410,14 +402,12 @@ void sumTilesUp(std::array<std::array<tile, 4>, 4> &totalTile)
 
             if ((totalTile[j][i].isOccupied && totalTile[j - 1][i].isOccupied) && (totalTile[j][i].numValue == totalTile[j - 1][i].numValue))
             {
-                std::cout << "Up Add Possible for " << j << i << std::endl;
                 currentScore += totalTile[j - 1][i].numValue;
 
                 totalTile[j - 1][i].numValue *= 2;
                 totalTile[j][i] = defaultTile;
             }
         }
-        std::cout << std::endl;
     }
     slideTilesUp(totalTile);
 }
@@ -431,14 +421,12 @@ void sumTilesDown(std::array<std::array<tile, 4>, 4> &totalTile)
 
             if ((totalTile[j][i].isOccupied && totalTile[j + 1][i].isOccupied) && (totalTile[j][i].numValue == totalTile[j + 1][i].numValue))
             {
-                std::cout << "Down Possible for " << j << i << std::endl;
                 currentScore += totalTile[j + 1][i].numValue;
 
                 totalTile[j + 1][i].numValue *= 2;
                 totalTile[j][i] = defaultTile;
             }
         }
-        std::cout << std::endl;
     }
     slideTilesDown(totalTile);
 }
@@ -478,9 +466,8 @@ void initGame()
     }
     generateTile();
     generateTile();
-    // generateTile();
-    // generateTile();
-    // generateTile();
+    readScore();
+    readScore();
 }
 
 void drawHeader()
@@ -495,7 +482,24 @@ void drawHeader()
 
     DrawRectangle(screenOffset + lineWidth + 3 * squareSize, ((screenOffset / 2)) + (tileSize / 2), tileSize, tileSize / 2, BROWN);
     DrawText("HighScore", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2 + (tileSize / 2) + lineWidth / 2, 18, LIGHTGRAY);
-    // DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + (3 * squareSize), (screenOffset / 2) + 20, 20, LIGHTGRAY);
+    DrawText(std::to_string(highScore).c_str(), screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2 + (tileSize / 2) + 3 * lineWidth, 20, LIGHTGRAY);
+}
+
+void saveCurrentGame()
+{
+
+    std::ifstream fin("../bin/save_001.bin", std::ios::binary);
+
+    if (!fin.is_open())
+    {
+        std::ofstream fout("../bin/save_001.bin", std::ios::binary);
+        fout.write(reinterpret_cast<char *>(&currentScore), sizeof(currentScore));
+
+        // Close binary file
+        fout.close();
+    }
+
+    fin.close();
 }
 
 int main(void)
@@ -504,7 +508,7 @@ int main(void)
 
     SetTargetFPS(60);
     initGame();
-    checkScore();
+
     // Font gameFont = LoadFont("QuinqueFive.ttf");
 
     while (!WindowShouldClose())
@@ -512,9 +516,10 @@ int main(void)
 
         if (is_game_over(totalTile))
         {
+            // WaitTime(1);
             BeginDrawing();
             drawHeader();
-            DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BGCOLOR);
+            DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BGCOLOR_SEMI_TRANS);
             DrawText("GAMEOVER", screenOffset + 60, ((screenOffset / 2) + 150) + (squareSize), 68, RED);
 
             if (IsKeyPressed(KEY_N))
@@ -596,6 +601,12 @@ int main(void)
             {
                 totalTile = last_move;
             }
+            if (IsKeyPressed(KEY_S))
+            {
+                saveCurrentGame();
+            }
+
+            checkScore();
 
             ClearBackground(RAYWHITE);
             // draw header
