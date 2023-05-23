@@ -7,10 +7,9 @@
 #include "raylib.h"
 #include <array>
 #include <string>
-#include <cstdlib>
-#include <ctime>
 #include <cmath>
 #include <iostream>
+#include <fstream>
 
 Color TILECOLOR2 = (Color){238, 228, 218, 255};
 Color TILECOLOR4 = (Color){238, 225, 201, 255};
