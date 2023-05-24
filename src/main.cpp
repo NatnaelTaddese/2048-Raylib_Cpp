@@ -29,12 +29,13 @@ Color BGCOLOR_SEMI_TRANS = (Color){205, 193, 180, 70};
 Color GRIDCOLOR = (Color){187, 173, 160, 255};
 
 // GLOBAL VARIABLES
-int screenWidth = 600;
-int screenHeight = 750;
+
 const int screenOffset = 50;
 const int squareSize = 120;
 const int lineWidth = 10;
 const int tileSize = squareSize - lineWidth;
+int screenWidth = 600;
+int screenHeight = 750;
 int fixFontPosition;
 int fixFontSize;
 int currentScore;
@@ -45,6 +46,8 @@ double lastUpdateTime = 0;
 bool moveValid = false;
 bool splashScreen = true;
 bool isFirstTime = true;
+bool showTutorial = true;
+bool pause = false;
 Color tileColor;
 Color numColor;
 
@@ -56,21 +59,6 @@ enum Level
 };
 
 Level level = easy;
-
-float lerp(float a, float b, float t)
-{
-    return a + (b - a) * t; // This returns a + t percent (t = 0.f is 0% and t = 1.f is 100%) of b
-}
-
-Vector2 Lerp(const Vector2 &v1, const Vector2 &v2, float t)
-{
-    float x = v1.x + (v2.x - v1.x) * t;
-    float y = v1.y + (v2.y - v1.y) * t;
-    Vector2 lerped;
-    lerped.x = x;
-    lerped.y = y;
-    return lerped;
-}
 
 struct
 {
@@ -107,12 +95,19 @@ std::array<std::array<tile, 4>, 4> last_move4X4;
 std::array<std::array<tile, 5>, 5> last_move5X5;
 std::array<std::array<tile, 6>, 6> last_move6X6;
 
-void selectTile()
+float lerp(float a, float b, float t)
 {
+    return a + (b - a) * t; // This returns a + t percent (t = 0.f is 0% and t = 1.f is 100%) of b
 }
 
-void getUsers()
+Vector2 Lerp(const Vector2 &v1, const Vector2 &v2, float t)
 {
+    float x = v1.x + (v2.x - v1.x) * t;
+    float y = v1.y + (v2.y - v1.y) * t;
+    Vector2 lerped;
+    lerped.x = x;
+    lerped.y = y;
+    return lerped;
 }
 
 // Generate tile
@@ -307,13 +302,15 @@ inline void DrawTiles(T &totalTile)
         }
     }
 }
+
+// slide tiles according to the direction applied
 template <class T>
 void slideTilesLeft(T &totalTile)
 {
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 1; j < 4; j++)
+        for (int j = 1; j < COLS; j++)
         {
 
             if (totalTile[i][j].isOccupied && totalTile[i][j - 1].isOccupied == false)
@@ -333,9 +330,9 @@ void slideTilesLeft(T &totalTile)
 template <class T>
 void slideTilesRight(T &totalTile)
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 2; j >= 0; j--)
+        for (int j = (COLS - 2); j >= 0; j--)
         {
 
             if (totalTile[i][j].isOccupied && totalTile[i][j + 1].isOccupied == false)
@@ -353,9 +350,9 @@ void slideTilesRight(T &totalTile)
 template <class T>
 void slideTilesUp(T &totalTile)
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 1; j < 4; j++)
+        for (int j = 1; j < COLS; j++)
         {
 
             if (totalTile[j][i].isOccupied && totalTile[j - 1][i].isOccupied == false)
@@ -373,9 +370,9 @@ void slideTilesUp(T &totalTile)
 template <class T>
 void slideTilesDown(T &totalTile)
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 2; j >= 0; j--)
+        for (int j = (COLS - 2); j >= 0; j--)
         {
 
             if (totalTile[j][i].isOccupied && totalTile[j + 1][i].isOccupied == false)
@@ -396,9 +393,9 @@ template <class T>
 void sumTilesleft(T &totalTile)
 {
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 1; j < 4; j++)
+        for (int j = 1; j < COLS; j++)
         {
 
             if ((totalTile[i][j].isOccupied && totalTile[i][j - 1].isOccupied) && (totalTile[i][j].numValue == totalTile[i][j - 1].numValue))
@@ -417,9 +414,9 @@ template <class T>
 void sumTilesRight(T &totalTile)
 {
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 2; j >= 0; j--)
+        for (int j = (COLS - 2); j >= 0; j--)
         {
 
             if ((totalTile[i][j].isOccupied && totalTile[i][j + 1].isOccupied) && (totalTile[i][j].numValue == totalTile[i][j + 1].numValue))
@@ -438,9 +435,9 @@ template <class T>
 void sumTilesUp(T &totalTile)
 {
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 1; j < 4; j++)
+        for (int j = 1; j < COLS; j++)
         {
 
             if ((totalTile[j][i].isOccupied && totalTile[j - 1][i].isOccupied) && (totalTile[j][i].numValue == totalTile[j - 1][i].numValue))
@@ -454,14 +451,13 @@ void sumTilesUp(T &totalTile)
     }
     slideTilesUp(totalTile);
 }
-
 template <class T>
 void sumTilesDown(T &totalTile)
 {
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 2; j >= 0; j--)
+        for (int j = (COLS - 2); j >= 0; j--)
         {
 
             if ((totalTile[j][i].isOccupied && totalTile[j + 1][i].isOccupied) && (totalTile[j][i].numValue == totalTile[j + 1][i].numValue))
@@ -522,13 +518,13 @@ void drawHeader()
     DrawText("2048", screenOffset, screenOffset / 2 - lineWidth, 62, LIGHTGRAY);
 
     // score board
-    DrawRectangle(screenOffset + lineWidth + 3 * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize / 2, BROWN);
-    DrawText("Score", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2, 20, LIGHTGRAY);
-    DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + (3 * squareSize), (screenOffset / 2) + 20, 20, LIGHTGRAY);
+    DrawRectangle(screenOffset + lineWidth + (ROWS - 1) * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize / 2, BROWN);
+    DrawText("Score", screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2, 20, LIGHTGRAY);
+    DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), (screenOffset / 2) + 20, 20, LIGHTGRAY);
 
-    DrawRectangle(screenOffset + lineWidth + 3 * squareSize, ((screenOffset / 2)) + (tileSize / 2), tileSize, tileSize / 2, BROWN);
-    DrawText("HighScore", screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2 + (tileSize / 2) + lineWidth / 2, 18, LIGHTGRAY);
-    DrawText(std::to_string(highScore).c_str(), screenOffset + (2 * lineWidth) + (3 * squareSize), screenOffset / 2 + (tileSize / 2) + 3 * lineWidth, 20, LIGHTGRAY);
+    DrawRectangle(screenOffset + lineWidth + (ROWS - 1) * squareSize, ((screenOffset / 2)) + (tileSize / 2), tileSize, tileSize / 2, BROWN);
+    DrawText("HighScore", screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2 + (tileSize / 2) + lineWidth / 2, 18, LIGHTGRAY);
+    DrawText(std::to_string(highScore).c_str(), screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2 + (tileSize / 2) + 3 * lineWidth, 20, LIGHTGRAY);
 }
 
 void saveCurrentGame()
@@ -547,23 +543,24 @@ void saveCurrentGame()
 
     fin.close();
 }
-void drawMenu()
+void drawModeSelector()
 {
+    checkScore();
     BeginDrawing();
     ClearBackground(RAYWHITE);
     drawHeader();
     DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BGCOLOR);
     DrawText("SELECT MODE", screenOffset + 60, ((screenOffset / 2) + 100) + (squareSize), 48, BROWN);
-    DrawText("Press 1 for easy mode (4X4)", screenOffset + 45, ((screenOffset / 2) + 250) + (squareSize), 28, GREEN);
+    DrawText("Press 1 for easy mode (6X6)", screenOffset + 45, ((screenOffset / 2) + 250) + (squareSize), 28, LIME);
     DrawText("Press 2 for medium mode(5X5)", screenOffset + 40, ((screenOffset / 2) + 300) + (squareSize), 28, BROWN);
-    DrawText("Press 3 for Hard mode(6X6)", screenOffset + 45, ((screenOffset / 2) + 350) + (squareSize), 28, RED);
+    DrawText("Press 3 for Hard mode(4X4)", screenOffset + 45, ((screenOffset / 2) + 350) + (squareSize), 28, RED);
 
     if (IsKeyPressed(KEY_ONE))
     {
-        level = easy;
-        COLS = ROWS = 4;
-
-        initGame(totalTile4X4);
+        level = hard;
+        COLS = ROWS = 6;
+        InitWindow(screenWidth + 300, screenHeight + 300, "2048");
+        initGame(totalTile6X6);
         isFirstTime = false;
     }
     if (IsKeyPressed(KEY_TWO))
@@ -576,26 +573,39 @@ void drawMenu()
     }
     if (IsKeyPressed(KEY_THREE))
     {
-        level = hard;
-        COLS = ROWS = 6;
-        InitWindow(screenWidth + 300, screenHeight + 300, "2048");
-        initGame(totalTile6X6);
+
+        level = easy;
+        COLS = ROWS = 4;
+        initGame(totalTile4X4);
         isFirstTime = false;
     }
 
     EndDrawing();
 }
-void drawTutorial()
+void drawMenu()
 {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    drawHeader();
+    // drawHeader();
     DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BGCOLOR);
     DrawText("Tutorial", screenOffset + 60, ((screenOffset / 2) + 150) + (squareSize), 68, BROWN);
+    DrawText("(^)", screenOffset + 423, ((screenOffset / 2) + 225) + (squareSize), 28, LIME);
 
-    if (IsKeyPressed(KEY_M))
+    DrawText("Move Tiles with arrow keys (<- , ->)", screenOffset + 10, ((screenOffset / 2) + 250) + (squareSize), 28, LIME);
+    DrawText("Press N for a NewGame", screenOffset + 40, ((screenOffset / 2) + 300) + (squareSize), 28, BROWN);
+    DrawText("Press L to load a Game", screenOffset + 40, ((screenOffset / 2) + 350) + (squareSize), 28, BROWN);
+    DrawText("Press U to Undo last Move", screenOffset + 40, ((screenOffset / 2) + 400) + (squareSize), 28, BROWN);
+
+    if (IsKeyPressed(KEY_N) || IsKeyPressed(KEY_ENTER))
     {
-        drawMenu();
+        splashScreen = false;
+        EndDrawing();
+        drawModeSelector();
+    }
+
+    if (IsKeyPressed(KEY_L))
+    {
+        /* code */
     }
 
     EndDrawing();
@@ -613,10 +623,17 @@ void update(T &totalTile, T &last_move)
         drawHeader();
         DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * ROWS) + lineWidth, (squareSize * COLS) + lineWidth, BGCOLOR_SEMI_TRANS);
         DrawText("GAMEOVER", screenOffset + 60, ((screenOffset / 2) + 150) + (squareSize), 68, RED);
+        DrawText("Press R to Retry", screenOffset + 40, ((screenOffset / 2) + 300) + (squareSize), 28, BROWN);
+        DrawText("Press N for a NewGame", screenOffset + 45, ((screenOffset / 2) + 350) + (squareSize), 28, LIME);
+
+        if (IsKeyPressed(KEY_R))
+        {
+            initGame(totalTile);
+        }
 
         if (IsKeyPressed(KEY_N))
         {
-            initGame(totalTile);
+            isFirstTime = true;
         }
 
         EndDrawing();
@@ -718,13 +735,16 @@ int main(void)
 
     SetTargetFPS(60);
 
-    // Font gameFont = LoadFont("QuinqueFive.ttf");
-
     while (!WindowShouldClose())
     {
-        if (isFirstTime)
+        if (splashScreen)
         {
             drawMenu();
+        }
+
+        else if (isFirstTime)
+        {
+            drawModeSelector();
         }
 
         else
@@ -732,14 +752,14 @@ int main(void)
 
             switch (level)
             {
-            case easy:
-                update(totalTile4X4, last_move4X4);
+            case hard:
+                update(totalTile6X6, last_move6X6);
                 break;
             case medium:
                 update(totalTile5X5, last_move5X5);
                 break;
-            case hard:
-                update(totalTile6X6, last_move6X6);
+            case easy:
+                update(totalTile4X4, last_move4X4);
                 break;
 
             default:
