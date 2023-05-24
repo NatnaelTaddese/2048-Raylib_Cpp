@@ -559,7 +559,7 @@ void drawModeSelector()
     {
         level = hard;
         COLS = ROWS = 6;
-        InitWindow(screenWidth + 300, screenHeight + 300, "2048");
+        InitWindow(screenWidth + 220, screenHeight + 160, "2048");
         initGame(totalTile6X6);
         isFirstTime = false;
     }
@@ -567,7 +567,7 @@ void drawModeSelector()
     {
         level = medium;
         COLS = ROWS = 5;
-        InitWindow(screenWidth + 200, screenHeight + 200, "2048");
+        InitWindow(screenWidth + 120, screenHeight + 50, "2048");
         initGame(totalTile5X5);
         isFirstTime = false;
     }
