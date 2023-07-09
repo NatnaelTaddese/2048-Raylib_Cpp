@@ -8,8 +8,8 @@
 #include <array>
 #include <string>
 #include <cmath>
-#include <vector>
-// #include <iostream>
+// #include <vector>
+#include <iostream>
 #include <fstream>
 
 Color TILECOLOR2 = (Color){238, 228, 218, 255};
@@ -29,7 +29,6 @@ Color BGCOLOR_SEMI_TRANS = (Color){205, 193, 180, 70};
 Color GRIDCOLOR = (Color){187, 173, 160, 255};
 
 // GLOBAL VARIABLES
-
 const int screenOffset = 50;
 const int squareSize = 120;
 const int lineWidth = 10;
@@ -84,7 +83,7 @@ struct user
     int highScore;
 };
 
-std::vector<user> users;
+// std::vector<user> users;
 
 // vector that stores all the squareTiles
 std::array<std::array<tile, 4>, 4> totalTile4X4;
@@ -527,22 +526,107 @@ void drawHeader()
     DrawText(std::to_string(highScore).c_str(), screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2 + (tileSize / 2) + 3 * lineWidth, 20, LIGHTGRAY);
 }
 
-void saveCurrentGame()
+template <class T>
+void saveCurrentGame(T &totalTile)
 {
 
-    std::ifstream fin("../bin/save_001.bin", std::ios::binary);
+    std::ofstream fout("../bin/save_001.txt");
 
-    if (!fin.is_open())
+    fout << level << " ";
+    for (int i = 0; i < ROWS; i++)
     {
-        std::ofstream fout("../bin/save_001.bin", std::ios::binary);
-        fout.write(reinterpret_cast<char *>(&currentScore), sizeof(currentScore));
+        for (int j = 0; j < COLS; j++)
+        {
+            fout << totalTile[i][j].absolutePosition.x << " ";
+            fout << totalTile[i][j].absolutePosition.y << " ";
+            fout << totalTile[i][j].numValue << " ";
+            fout << totalTile[i][j].isOccupied << " ";
+            fout << totalTile[i][j].isNew << " ";
+            fout << totalTile[i][j].tileAnimationProgress << " ";
+        }
+    }
+    // Close file
+    fout.close();
+}
 
-        // Close binary file
-        fout.close();
+void loadGame()
+{
+    std::ifstream fin("../bin/save_001.txt");
+
+    int s_level;
+    fin >> s_level;
+
+    switch (s_level)
+    {
+    case 0:
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 6; j++)
+            {
+                fin >> totalTile6X6[i][j].absolutePosition.x;
+                fin >> totalTile6X6[i][j].absolutePosition.y;
+                fin >> totalTile6X6[i][j].numValue;
+                fin >> totalTile6X6[i][j].isOccupied;
+                fin >> totalTile6X6[i][j].isNew;
+                fin >> totalTile6X6[i][j].tileAnimationProgress;
+            }
+        }
+        level = easy;
+        ROWS = COLS = 6;
+        InitWindow(screenWidth + 220, screenHeight + 160, "2048");
+        isFirstTime = false;
+        splashScreen = false;
+
+        break;
+    case 1:
+
+        for (int i = 0; i < 5; i++)
+        {
+            for (int j = 0; j < 5; j++)
+            {
+                fin >> totalTile5X5[i][j].absolutePosition.x;
+                fin >> totalTile5X5[i][j].absolutePosition.y;
+                fin >> totalTile5X5[i][j].numValue;
+                fin >> totalTile5X5[i][j].isOccupied;
+                fin >> totalTile5X5[i][j].isNew;
+                fin >> totalTile5X5[i][j].tileAnimationProgress;
+            }
+        }
+        level = medium;
+        InitWindow(screenWidth + 120, screenHeight + 50, "2048");
+        initGame(totalTile5X5);
+        isFirstTime = false;
+        splashScreen = false;
+
+        break;
+    case 2:
+
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                fin >> totalTile4X4[i][j].absolutePosition.x;
+                fin >> totalTile4X4[i][j].absolutePosition.y;
+                fin >> totalTile4X4[i][j].numValue;
+                fin >> totalTile4X4[i][j].isOccupied;
+                fin >> totalTile4X4[i][j].isNew;
+                fin >> totalTile4X4[i][j].tileAnimationProgress;
+            }
+        }
+        level = easy;
+        COLS = ROWS = 4;
+        isFirstTime = false;
+        splashScreen = false;
+
+        break;
+    default:
+        std::cout << "error loading game " << level << std::endl;
+        break;
     }
 
     fin.close();
 }
+
 void drawModeSelector()
 {
     checkScore();
@@ -605,7 +689,8 @@ void drawMenu()
 
     if (IsKeyPressed(KEY_L))
     {
-        /* code */
+        EndDrawing();
+        loadGame();
     }
 
     EndDrawing();
@@ -710,10 +795,8 @@ void update(T &totalTile, T &last_move)
         {
             totalTile = last_move;
         }
-        if (IsKeyPressed(KEY_S))
-        {
-            saveCurrentGame();
-        }
+
+        saveCurrentGame(totalTile);
 
         checkScore();
 
