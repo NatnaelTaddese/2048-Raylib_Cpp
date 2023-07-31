@@ -29,12 +29,12 @@ Color BGCOLOR_SEMI_TRANS = (Color){205, 193, 180, 70};
 Color GRIDCOLOR = (Color){187, 173, 160, 255};
 
 // GLOBAL VARIABLES
-const int screenOffset = 50;
+const int screenOffset = 0; // original: 50
 const int squareSize = 120;
 const int lineWidth = 10;
 const int tileSize = squareSize - lineWidth;
-int screenWidth = 600;
-int screenHeight = 750;
+int screenWidth = 490;  // original: 600
+int screenHeight = 640; // original: 750
 int fixFontPosition;
 int fixFontSize;
 int currentScore;
@@ -514,16 +514,16 @@ void initGame(T &totalTile)
 void drawHeader()
 {
     // header text defaults
-    DrawText("2048", screenOffset, screenOffset / 2 - lineWidth, 62, LIGHTGRAY);
+    DrawText("2048", screenOffset, screenOffset / 2, 62, LIGHTGRAY);
 
     // score board
-    DrawRectangle(screenOffset + lineWidth + (ROWS - 1) * squareSize, (screenOffset / 2) - lineWidth, tileSize, tileSize / 2, BROWN);
-    DrawText("Score", screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2, 20, LIGHTGRAY);
-    DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), (screenOffset / 2) + 20, 20, LIGHTGRAY);
+    DrawRectangle(screenOffset + lineWidth + (ROWS - 1) * squareSize, (screenOffset / 2), tileSize, tileSize / 2, BROWN);
+    DrawText("Score", screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), (screenOffset / 2) + lineWidth, 20, LIGHTGRAY);
+    DrawText(std::to_string(currentScore).c_str(), screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), (screenOffset / 2) + 30, 20, LIGHTGRAY);
 
-    DrawRectangle(screenOffset + lineWidth + (ROWS - 1) * squareSize, ((screenOffset / 2)) + (tileSize / 2), tileSize, tileSize / 2, BROWN);
-    DrawText("HighScore", screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2 + (tileSize / 2) + lineWidth / 2, 18, LIGHTGRAY);
-    DrawText(std::to_string(highScore).c_str(), screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2 + (tileSize / 2) + 3 * lineWidth, 20, LIGHTGRAY);
+    DrawRectangle(screenOffset + lineWidth + (ROWS - 1) * squareSize, ((screenOffset / 2)) + (tileSize / 2) + lineWidth, tileSize, tileSize / 2, BROWN);
+    DrawText("HighScore", screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2 + (tileSize / 2) + lineWidth + 3, 18, LIGHTGRAY);
+    DrawText(std::to_string(highScore).c_str(), screenOffset + (2 * lineWidth) + ((ROWS - 1) * squareSize), screenOffset / 2 + (tileSize / 2) + 3 * lineWidth + 3, 20, LIGHTGRAY);
 }
 
 template <class T>
