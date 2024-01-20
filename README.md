@@ -1,5 +1,6 @@
 ## currently unfinished
 
+![screenshot](./build/screenshots/Screenshot1.png)
 Questions you might ask:
 
 "But Nati, you didn't use OOP, why not write the whole thing in C?"
@@ -73,3 +74,5 @@ link_to("LIB_FOLDER_NAME")
 
 Rerun premake and it will build your library for you.
 Note that by default link_to will add include dirs for your library folder and library/include. If you have other include needs you will have to add those to your premake file manually.
+
+![retry](./build/screenshots/Screenshot2.png)
