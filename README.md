@@ -1,11 +1,6 @@
-## currently unfinished
+# 2048
 
 ![screenshot](./build/screenshots/Screenshot1.png)
-Questions you might ask:
-
-"But Nati, you didn't use OOP, why not write the whole thing in C?"
-
-Chillax, I'm working with what I know.
 
 # Get Raylib
 
@@ -26,21 +21,21 @@ By default this process is setup to build a project using C. If you want to use 
 
 Only do ONE of these options depending on your compiler and platform.
 
-## MinGW-w64 Users
+## MinGW-w64 (Win32) Users
 
-Open your compiler terminal (w64devkit if you are using it), change to the game folder and type
+Open your compiler terminal (w64devkit if you are using it), change to the game folder `build` and type
 
-    make
+    mingw32-make.exe
 
 This will build your game
 
 ## Linux/macOS users
 
-Open your terminal, change to the game folder and type.
+Open your terminal, change to the game folder `build` and type.
 
     make
 
-This will build your starting game template
+This will build the game
 
 # Building for other OpenGL targets
 
