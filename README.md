@@ -26,10 +26,6 @@ By default this process is setup to build a project using C. If you want to use 
 
 Only do ONE of these options depending on your compiler and platform.
 
-## Windows Users
-
-Double click the .sln file that was generated in the folder. From here you can use the project as normal.
-
 ## MinGW-w64 Users
 
 Open your compiler terminal (w64devkit if you are using it), change to the game folder and type
