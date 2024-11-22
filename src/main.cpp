@@ -30,10 +30,10 @@ Color BGCOLOR_SEMI_TRANS = (Color){205, 193, 180, 70};
 Color GRIDCOLOR = (Color){187, 173, 160, 255};
 
 // GLOBAL VARIABLES
-const int screenOffset = 0; // original: 50
-const int squareSize = 120;
-const int lineWidth = 10;
-const int tileSize = squareSize - lineWidth;
+constexpr int screenOffset = 0; // original: 50
+constexpr int squareSize = 120;
+constexpr int lineWidth = 10;
+constexpr int tileSize = squareSize - lineWidth;
 int screenWidth = 490;  // original: 600
 int screenHeight = 640; // original: 750
 int fixFontPosition;
@@ -68,13 +68,13 @@ struct
 
 struct tile
 {
-    Vector2 absolutePosition;
-    Color tileColor;
+    Vector2 absolutePosition{};
+    Color tileColor{};
     int numValue = 0;
     bool isOccupied = false;
-    bool isNew;
-    bool isSliding;
-    float tileAnimationProgress;
+    bool isNew{};
+    bool isSliding{};
+    float tileAnimationProgress{};
 
 } defaultTile;
 
@@ -95,7 +95,7 @@ std::array<std::array<tile, 4>, 4> last_move4X4;
 std::array<std::array<tile, 5>, 5> last_move5X5;
 std::array<std::array<tile, 6>, 6> last_move6X6;
 
-float lerp(float a, float b, float t)
+float lerp(const float a, const float b, const float t)
 {
     return a + (b - a) * t; // This returns a + t percent (t = 0.f is 0% and t = 1.f is 100%) of b
 }
@@ -469,7 +469,7 @@ void sumTilesDown(T &totalTile)
 }
 
 // draw the playing square board
-void drawBoard(int screenOffset, int squareSize)
+void drawBoard(const int screenOffset, const int squareSize)
 {
     // grid background rectangle
     DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * ROWS), (squareSize * COLS), BGCOLOR);
@@ -704,7 +704,7 @@ void update(T &totalTile, T &last_move)
         ClearBackground(RAYWHITE);
         drawHeader();
         DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * ROWS) + lineWidth, (squareSize * COLS) + lineWidth, BGCOLOR_SEMI_TRANS);
-        DrawText("GAMEOVER", screenOffset + 60, ((screenOffset / 2) + 150) + (squareSize), 68, RED);
+        DrawText("GAME OVER", screenOffset + 60, ((screenOffset / 2) + 150) + (squareSize), 68, RED);
         DrawText("Press R to Retry", screenOffset + 40, ((screenOffset / 2) + 300) + (squareSize), 28, BROWN);
         DrawText("Press N for a NewGame", screenOffset + 45, ((screenOffset / 2) + 350) + (squareSize), 28, LIME);
 
@@ -809,7 +809,7 @@ void update(T &totalTile, T &last_move)
     }
 }
 
-int main(void)
+int main()
 {
     InitWindow(screenWidth, screenHeight, "2048");
 
