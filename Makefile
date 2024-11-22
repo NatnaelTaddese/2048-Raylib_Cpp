@@ -27,7 +27,7 @@ endif
 
 # Default target
 default:
-	g++ ./src/*.cpp -o $(BUILD_PATH) -O2 -Wall -Wno-missing-braces -I $(INCLUDE_PATH) -L $(LIBRARY_PATH) $(LIBS)
+	g++ ./src/main.cpp -o $(BUILD_PATH) -O2 -Wall -Wno-missing-braces -I $(INCLUDE_PATH) -L $(LIBRARY_PATH) $(LIBS)
 
 
 #default:

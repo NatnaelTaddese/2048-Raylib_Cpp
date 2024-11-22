@@ -224,14 +224,12 @@ void checkScore()
 template <class T>
 inline void DrawTiles(T &totalTile)
 {
-
     for (int i = 0; i < ROWS; i++)
     {
         for (int j = 0; j < COLS; j++)
         {
             if (totalTile[i][j].numValue != 0)
             {
-
                 fixFontPosition = totalTile[i][j].numValue < 10 ? 0 : totalTile[i][j].numValue < 20 ? 10
                                                                   : totalTile[i][j].numValue < 100  ? 20
                                                                   : totalTile[i][j].numValue < 1000 ? 30
@@ -254,54 +252,52 @@ inline void DrawTiles(T &totalTile)
 
                 if (totalTile[i][j].isNew)
                 {
-                    totalTile[i][j].tileAnimationProgress += 0.05f;
+                    // Slower progression
+                    totalTile[i][j].tileAnimationProgress += 0.02f; // Reduced speed
 
-                    // Calculate current tile position using Lerp function
-                    Vector2 currentTilePos = Lerp(totalTile[i][j].absolutePosition,
-                                                  {(screenOffset + lineWidth) + ((j)*squareSize),
-                                                   (((screenOffset / 2) + 150) + lineWidth) + ((i)*squareSize)},
-                                                  totalTile[i][j].tileAnimationProgress);
+                    // Scale factor using smoother easing function
+                    float scale = EaseOutElastic(totalTile[i][j].tileAnimationProgress);
 
-                    // Draw tile at current position
-                    DrawRectangleV(currentTilePos, (Vector2){tileSize * totalTile[i][j].tileAnimationProgress, tileSize}, tileColor);
+                    float scaledTileSize = tileSize * scale;
 
-                    // If tile animation is complete, set isNew flag to false
+                    // Center the scaled tile
+                    float offsetX = (tileSize - scaledTileSize) / 2;
+                    float offsetY = (tileSize - scaledTileSize) / 2;
+
+                    DrawRectangle(
+                        totalTile[i][j].absolutePosition.x + offsetX,
+                        totalTile[i][j].absolutePosition.y + offsetY,
+                        scaledTileSize,
+                        scaledTileSize,
+                        tileColor);
+
+                    // Draw the tile value
+                    DrawText(std::to_string(totalTile[i][j].numValue).c_str(),
+                             (totalTile[i][j].absolutePosition.x + offsetX + (scaledTileSize / 2) - 10) - fixFontPosition,
+                             (totalTile[i][j].absolutePosition.y + offsetY + (scaledTileSize / 2) - 30),
+                             60 - fixFontSize,
+                             numColor);
+
+                    // End animation
                     if (totalTile[i][j].tileAnimationProgress >= 1.0f)
                     {
                         totalTile[i][j].isNew = false;
                     }
                 }
-
-                else if (totalTile[i][j].isSliding)
-                {
-                    totalTile[i][j].tileAnimationProgress += 0.05f;
-
-                    // Calculate current tile position using Lerp function
-                    Vector2 currentTilePos = Lerp(totalTile[i][j].absolutePosition,
-                                                  {(screenOffset + lineWidth) + ((j)*squareSize),
-                                                   (((screenOffset / 2) + 150) + lineWidth) + ((i)*squareSize)},
-                                                  totalTile[i][j].tileAnimationProgress);
-
-                    // Draw tile at current position
-                    DrawRectangleV(currentTilePos, (Vector2){tileSize * totalTile[i][j].tileAnimationProgress, tileSize}, tileColor);
-
-                    // If tile animation is complete, set isNew flag to false
-                    if (totalTile[i][j].tileAnimationProgress >= 1.0f)
-                    {
-                        totalTile[i][j].isSliding = false;
-                    }
-                }
-
                 else
                 {
                     DrawRectangle(totalTile[i][j].absolutePosition.x, totalTile[i][j].absolutePosition.y, tileSize, tileSize, tileColor);
-                    DrawText(std::to_string(totalTile[i][j].numValue).c_str(), (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition, (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30), 60 - fixFontSize, numColor);
-                    totalTile[i][j].isNew = false;
+                    DrawText(std::to_string(totalTile[i][j].numValue).c_str(),
+                             (totalTile[i][j].absolutePosition.x + (tileSize / 2) - 10) - fixFontPosition,
+                             (totalTile[i][j].absolutePosition.y + (tileSize / 2) - 30),
+                             60 - fixFontSize,
+                             numColor);
                 }
             }
         }
     }
 }
+
 
 // slide tiles according to the direction applied
 template <class T>
