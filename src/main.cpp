@@ -11,23 +11,12 @@
 // #include <vector>
 #include <iostream>
 #include <fstream>
-#include "utils.cpp"
 
-Color TILECOLOR2 = (Color){238, 228, 218, 255};
-Color TILECOLOR4 = (Color){238, 225, 201, 255};
-Color TILECOLOR8 = (Color){243, 178, 122, 255};
-Color TILECOLOR16 = (Color){246, 150, 100, 255};
-Color TILECOLOR32 = (Color){247, 124, 95, 255};
-Color TILECOLOR64 = (Color){247, 95, 59, 255};
-Color TILECOLOR128 = (Color){237, 208, 115, 255};
-Color TILECOLOR256 = (Color){247, 180, 98, 255};
-
-Color NUMCOLOR = (Color){249, 246, 242, 255};
-Color NUMCOLORDARK = (Color){119, 110, 101, 255};
-
-Color BGCOLOR = (Color){205, 193, 180, 255};
-Color BGCOLOR_SEMI_TRANS = (Color){205, 193, 180, 70};
-Color GRIDCOLOR = (Color){187, 173, 160, 255};
+#include "themes/default_theme.h"
+#include "entities/level.h"
+#include "entities/grid.h"
+#include "entities/tile.h"
+#include "utils/ease_out_elastic.cpp"
 
 // GLOBAL VARIABLES
 constexpr int screenOffset = 0; // original: 50
@@ -51,32 +40,7 @@ bool pause = false;
 Color tileColor;
 Color numColor;
 
-enum Level
-{
-    easy = 0,
-    medium,
-    hard
-};
 
-Level level = easy;
-
-struct
-{
-    Color backgroundColor = DARKGRAY;
-    Color gridColor = GRAY;
-} Grid;
-
-struct tile
-{
-    Vector2 absolutePosition{};
-    Color tileColor{};
-    int numValue = 0;
-    bool isOccupied = false;
-    bool isNew{};
-    bool isSliding{};
-    float tileAnimationProgress{};
-
-} defaultTile;
 
 struct user
 {
@@ -239,16 +203,16 @@ inline void DrawTiles(T &totalTile)
                                                                : totalTile[i][j].numValue < 600   ? 6
                                                                : totalTile[i][j].numValue < 1200  ? 15
                                                                                                   : 20;
-                tileColor = totalTile[i][j].numValue == 2 ? TILECOLOR2 : totalTile[i][j].numValue == 4 ? TILECOLOR4
-                                                                     : totalTile[i][j].numValue == 8   ? TILECOLOR8
-                                                                     : totalTile[i][j].numValue == 16  ? TILECOLOR16
-                                                                     : totalTile[i][j].numValue == 32  ? TILECOLOR32
-                                                                     : totalTile[i][j].numValue == 64  ? TILECOLOR64
-                                                                     : totalTile[i][j].numValue == 128 ? TILECOLOR128
-                                                                     : totalTile[i][j].numValue == 256 ? TILECOLOR256
-                                                                                                       : TILECOLOR128;
+                tileColor = totalTile[i][j].numValue == 2 ? TILE_COLOR_2 : totalTile[i][j].numValue == 4 ? TILE_COLOR_4
+                                                                     : totalTile[i][j].numValue == 8   ? TILE_COLOR_8
+                                                                     : totalTile[i][j].numValue == 16  ? TILE_COLOR_16
+                                                                     : totalTile[i][j].numValue == 32  ? TILE_COLOR_32
+                                                                     : totalTile[i][j].numValue == 64  ? TILE_COLOR_64
+                                                                     : totalTile[i][j].numValue == 128 ? TILE_COLOR_128
+                                                                     : totalTile[i][j].numValue == 256 ? TILE_COLOR_256
+                                                                                                       : TILE_COLOR_128;
 
-                numColor = totalTile[i][j].numValue < 16 ? NUMCOLORDARK : NUMCOLOR;
+                numColor = totalTile[i][j].numValue < 16 ? NUM_COLOR_DARK : NUM_COLOR;
 
                 if (totalTile[i][j].isNew)
                 {
@@ -472,19 +436,19 @@ void sumTilesDown(T &totalTile)
 void drawBoard(const int screenOffset, const int squareSize)
 {
     // grid background rectangle
-    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * ROWS), (squareSize * COLS), BGCOLOR);
+    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * ROWS), (squareSize * COLS), BG_COLOR);
 
     // horizontal grid
     for (int i = 0; i <= ROWS; i++)
     {
         int spacing = squareSize * i;
-        DrawRectangle(screenOffset, ((screenOffset / 2) + 150) + spacing, (squareSize * ROWS) + lineWidth, lineWidth, GRIDCOLOR);
+        DrawRectangle(screenOffset, ((screenOffset / 2) + 150) + spacing, (squareSize * ROWS) + lineWidth, lineWidth, GRID_COLOR);
     }
     // vertical grid
     for (int i = 0; i <= COLS; i++)
     {
         int spacing = squareSize * i;
-        DrawRectangle(screenOffset + spacing, ((screenOffset / 2) + 150), lineWidth, (squareSize * COLS), GRIDCOLOR);
+        DrawRectangle(screenOffset + spacing, ((screenOffset / 2) + 150), lineWidth, (squareSize * COLS), GRID_COLOR);
     }
 }
 
@@ -630,7 +594,7 @@ void drawModeSelector()
     BeginDrawing();
     ClearBackground(RAYWHITE);
     drawHeader();
-    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BGCOLOR);
+    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BG_COLOR);
     DrawText("SELECT MODE", screenOffset + 60, ((screenOffset / 2) + 100) + (squareSize), 48, BROWN);
     DrawText("Press 1 for easy mode (6X6)", screenOffset + 45, ((screenOffset / 2) + 250) + (squareSize), 28, LIME);
     DrawText("Press 2 for medium mode(5X5)", screenOffset + 40, ((screenOffset / 2) + 300) + (squareSize), 28, BROWN);
@@ -668,7 +632,7 @@ void drawMenu()
     BeginDrawing();
     ClearBackground(RAYWHITE);
     // drawHeader();
-    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BGCOLOR);
+    DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * 4) + lineWidth, (squareSize * 4) + lineWidth, BG_COLOR);
     DrawText("Tutorial", screenOffset + 60, ((screenOffset / 2) + 150) + (squareSize), 68, BROWN);
     DrawText("(^)", screenOffset + 423, ((screenOffset / 2) + 225) + (squareSize), 28, LIME);
 
@@ -703,7 +667,7 @@ void update(T &totalTile, T &last_move)
         BeginDrawing();
         ClearBackground(RAYWHITE);
         drawHeader();
-        DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * ROWS) + lineWidth, (squareSize * COLS) + lineWidth, BGCOLOR_SEMI_TRANS);
+        DrawRectangle(screenOffset, (screenOffset / 2) + 150, (squareSize * ROWS) + lineWidth, (squareSize * COLS) + lineWidth, BG_COLOR_SEMI_TRANSPARENT);
         DrawText("GAME OVER", screenOffset + 60, ((screenOffset / 2) + 150) + (squareSize), 68, RED);
         DrawText("Press R to Retry", screenOffset + 40, ((screenOffset / 2) + 300) + (squareSize), 28, BROWN);
         DrawText("Press N for a NewGame", screenOffset + 45, ((screenOffset / 2) + 350) + (squareSize), 28, LIME);
