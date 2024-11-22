@@ -28,6 +28,7 @@ endif
 
 # Default target
 default:
+	mkdir -p $(BUILD_PATH)
 	g++ ./src/main.cpp -o $(BUILD_PATH)game -O2 -Wall -Wno-missing-braces -I $(INCLUDE_PATH) -L $(LIBRARY_PATH) $(LIBS)
 
 # Clean build files
