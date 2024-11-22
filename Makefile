@@ -14,6 +14,7 @@ else
     ifeq ($(UNAME_S),Linux)
         INCLUDE_PATH = ./include/platform/linux_64/
         LIBRARY_PATH = ./lib/platform/linux_64/
+#        export LD_LIBRARY_PATH=./lib/platform/linux_64/:$LD_LIBRARY_PATH
         LIBS = -lraylib -lGL -lm -lpthread -ldl
         BUILD_PATH = ./build/linux_64/
     endif
@@ -27,11 +28,8 @@ endif
 
 # Default target
 default:
-	g++ ./src/main.cpp -o $(BUILD_PATH) -O2 -Wall -Wno-missing-braces -I $(INCLUDE_PATH) -L $(LIBRARY_PATH) $(LIBS)
+	g++ ./src/main.cpp -o $(BUILD_PATH)game -O2 -Wall -Wno-missing-braces -I $(INCLUDE_PATH) -L $(LIBRARY_PATH) $(LIBS)
 
-
-#default:
-#	g++ ./src/*.cpp -o ./build/Game.exe -O2 -Wall -Wno-missing-braces -I ./include/ -L ./lib/ -lraylib -lopengl32 -lgdi32 -lwinmm
-#
-## default:
-## 	g++ ../src/*.cpp -o Game.exe -O2 -Wall -Wno-missing-braces -I ../include/ -L ../lib/ -lraylib -lopengl32 -lgdi32 -lwinmm
+# Clean build files
+clean:
+	rm -f $(BUILD_PATH)game
